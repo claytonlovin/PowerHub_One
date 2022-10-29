@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block title %}Editar Grupo{% endblock %}
+
+{% block content %}
+<style>
+    iframe{
+        padding: 0 !important;
+        border: none !important;
+    }
+    .card-body{
+        padding: 0 !important;
+    }
+    </style>
+<div class="">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight text-black">{{ visualizar_relatorio['DS_NOME_RELATORIO']}}</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                            aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Menu de opções:</div>
+                            <a class="dropdown-item" href="#">Editar</a>
+                            <a class="dropdown-item" href="#">Enviar para e-mail</a>
+                            {% if session['FL_ADMINISTRADOR'] == True %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Excluir Relatório</a>
+									{% else %}
+										{{ super() }}
+									{% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="col-lg-12">
+                    <div class="card-body">
+                        <div class="ratio" style="height: 100vh; width: 100%; border: none">
+                            <iframe src="{{ visualizar_relatorio['DS_LINK_RELATORIO'] }}" title="" width="100%" height="100%"></iframe>
+                          </div>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+

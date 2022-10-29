@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+
+{% block title %}Editar Grupo{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xl-12 col-md-6 mb-4">
+				<div class="row align-items-center">
+					<div class="col">
+						<h2>Relatórios</h2>
+					</div>
+					
+					<div class="col d-flex flex-row-reverse bd-highlight">
+						{% if session['FL_ADMINISTRADOR'] == True %}
+							<button class="btn btn-primary">Criar Relatório</button>
+						{% else %}
+							{{ super() }}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+
+  	{%  for relatorio in NOME_RELATORIO %}
+		<div class="container-fluid ">
+			<div class="row">
+				<!-- Earnings (Monthly) Card Example -->
+				
+					<div class="col-xl-12 col-md-12 mb-4">
+						<div class="card border-left-success shadow h-100 py-2">
+							<div class="card-body">
+								<div class="row no-gutters align-items-center">
+									<div class="col mr-2">
+										<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+											<p>{{ relatorio['DS_NOME_RELATORIO']}}</p>
+										</div>
+										<!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
+									</div>
+									<div class="col-auto">
+										<a  href="{{ url_for('visualizar_relatorio', id_relatorio=relatorio['ID_RELATORIO'])}}"><i class="fas fa-eye fa-2x text-primary-300"></i></a>
+										{% if session['FL_ADMINISTRADOR'] == True %}
+											<a href="#"><i class="fas fa-trash fa-2x text-primary-300"></i></a>
+										{% else %}
+											{{ super() }}
+										{% endif %}
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+		</div>
+		</div>	
+  	{% endfor %}
+</div>
+
+
+{% endblock %}
+
+
+

@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "api-flask"
+version = "0.1.0"
+description = ""
+authors = ["Clayton Silva <57988870+claytonlovin@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "api_flask"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = "^2.2.2"
+pyodbc = "^4.0.34"
+Jinja2 = "^3.1.2"
+SQLAlchemy = "^1.4.41"
+pandas = "^1.4.4"
+Flask-MySQLdb = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

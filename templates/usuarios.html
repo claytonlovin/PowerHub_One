@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+		<div class="row">
+			<div class="col-xl-12 col-md-6 mb-4">
+				<div class="row align-items-center">
+					<div class="col">
+						<h2>Usuarios</h2>
+					</div>
+					
+					<div class="col d-flex flex-row-reverse bd-highlight">
+						{% if session['FL_ADMINISTRADOR'] == True %}
+							<button class="btn btn-primary">Criar Usuarios</button>
+						{% else %}
+							{{ super() }}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+<div class="card">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Nome</th>
+            <th scope="col">Login</th>
+            <th scope="col">Telefone</th>
+            <th scope="col">Email</th>
+            <th scope="col">Permissão</th>
+          </tr>
+        </thead>
+  
+      
+        <tbody>
+          {% for contas in account %}
+          <tr>
+            <th scope="row">1</th>            
+            <td>{{ contas['NOME_USUARIO'] }}</td>
+            <td>{{ contas['DS_LOGIN'] }}</td>
+            <td>{{ contas['DS_TELEFONE'] }}</td>
+            <td>{{ contas['DS_EMAIL'] }}</td>
+            {% if session['FL_ADMINISTRADOR'] == 1 %}
+			      <td>Administrador</td>
+              {% else %}
+                        <td>Visualizar</td>
+              {{ super() }}
+              {% endif %}
+            {% endfor %}
+          
+          </tr>
+     
+        </tbody>
+        
+      </table>
+</div>
+{% endblock %}
