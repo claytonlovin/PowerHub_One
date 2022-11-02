@@ -131,6 +131,21 @@ def home():
         cursor.close()
 
         return render_template('home.html', list_grupos_usuario=list_grupo_usuario)
+
+    # CRIAR NOVO GRUPO
+    if request.method == 'POST' and 'organizacao' in request.form and 'email' in request.form:
+        if request.method == 'POST' and 'grupo' in request.form:
+            DS_NOVO_GRUPO = request.form['grupo']
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_GRUPO WHERE NOME_DO_GRUPO = %s', (DS_NOVO_GRUPO, ))
+            grupo = cursor.fetchone()
+            if grupo:
+                msg = 'Já existe um grupo com o mesmo nome!'
+            else:
+                cursor.callproc('sp_create_grupo', (0, DS_NOVO_GRUPO, 1))
+                mysql.connection.commit()
+                msg = 'Grupo criado com sucesso!'
+            return redirect(url_for('home'))
    
     return redirect(url_for('login'))
 
@@ -147,9 +162,7 @@ def listar_relatorios(id_grupo):
         queryRelatorio = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         queryRelatorio.execute('SELECT DISTINCT RL.ID_RELATORIO, RL.DS_NOME_RELATORIO FROM TB_RELATORIO RL JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = RL.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))
         NOME_RELATORIO = queryRelatorio.fetchall()
-        queryRelatorio.close()
 
-        print(NOME_RELATORIO)
         return render_template('listar_relatorios.html', NOME_RELATORIO=NOME_RELATORIO)
 
     else:

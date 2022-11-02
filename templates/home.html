@@ -12,7 +12,7 @@
 							
 							<div class="col d-flex flex-row-reverse bd-highlight">
 								{% if session['FL_ADMINISTRADOR'] == True %}
-									<button class="btn btn-primary">Criar Grupo</button>
+									<a href="#" type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal-1"> Criar Grupos</a>
 								{% else %}
 									{{ super() }}
 								{% endif %}
@@ -43,8 +43,32 @@
 					</div>
 			</div>
 			{% endfor %}
-			
+
+			<!-- -->		
 		</div>
+
+		<div class="modal fade" id="myModal-1">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+				<div class="p-3" >
+				  <h4 class="modal-title">Criar Novo Grupo</h4>
+				</div>
+				<form class="user" action="{{ url_for('') }}" method="post">
+				<div class="modal-body">
+					<div class="form-group align-items-center d-flex flex-column">
+						<input type="text" name="" name="" id="grupo" class="form-control form-control-user"
+							id="exampleInputText" placeholder="Equipe Financeira">
+					</div>
+				</div>
+				<div class="modal-footer d-flex justify-content-betwen flex-row ">
+				  <a href="#" type="button" class="btn btn-primary small" data-bs-dismiss="modal">Cancelar</a>
+				  <a href="#" type="button" class="btn btn-success  small" data-bs-dismiss="modal">Criar Grupo</a>
+				</div>
+				</form>
+			  </div>
+			</div>
+		  </div>
+		  
 		
 {% endblock %}
 
@@ -57,3 +81,14 @@
 }
 </style>
 
+<script>
+	$('#exampleModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('New message to ' + recipient)
+  modal.find('.modal-body input').val(recipient)
+})
+</script>
