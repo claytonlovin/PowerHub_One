@@ -18,6 +18,7 @@
 								{% endif %}
 							</div>
 						</div>
+						<p>{{ criacao_grupo }}</p>
 					</div>
 				</div>
 		<div class="context-card">
@@ -25,12 +26,13 @@
 				<div class="row">
 					<!-- Earnings (Monthly) Card Example -->
 					<div class="col-xl-12 col-md-12 mb-4">
-						<div class="card border-left-primary shadow h-100 py-2">
+						<div class="card border-left-success shadow h-100 py-2" id="grupo-list">
 							<div class="card-body">
 								<div class="row no-gutters align-items-center">
 									<div class="col mr-2">
 										<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-											<p>{{ grupos_usuario['NOME_DO_GRUPO']}}</p>
+											<p class="">{{ grupos_usuario['NOME_DO_GRUPO']}}</p>
+											
 										</div>
 										<!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
 									</div>
@@ -41,35 +43,34 @@
 							</div>
 						</div>
 					</div>
-			</div>
-			{% endfor %}
-
-			<!-- -->		
 		</div>
+		{% endfor %}
 
+		<!-- -->		
+		</div>
+		<!-- MODAL CRIAR GRUPO-->
 		<div class="modal fade" id="myModal-1">
 			<div class="modal-dialog">
 			  <div class="modal-content">
 				<div class="p-3" >
 				  <h4 class="modal-title">Criar Novo Grupo</h4>
 				</div>
-				<form class="user" action="{{ url_for('') }}" method="post">
+				<form class="user"  method="post">
 				<div class="modal-body">
 					<div class="form-group align-items-center d-flex flex-column">
-						<input type="text" name="" name="" id="grupo" class="form-control form-control-user"
-							id="exampleInputText" placeholder="Equipe Financeira">
+						<input type="text" name="grupo" id="grupo" class="form-control form-control-user"
+							id="exampleInputText" placeholder="Equipe Financeira" required>
 					</div>
 				</div>
 				<div class="modal-footer d-flex justify-content-betwen flex-row ">
-				  <a href="#" type="button" class="btn btn-primary small" data-bs-dismiss="modal">Cancelar</a>
-				  <a href="#" type="button" class="btn btn-success  small" data-bs-dismiss="modal">Criar Grupo</a>
+				  
+				  <button class="btn btn-primary small btn-user btn-block"  type="submit">Criar Grupo</button>
 				</div>
 				</form>
+				<p>{{criacao_grupo}}</p>
 			  </div>
 			</div>
-		  </div>
-		  
-		
+		  </div>  
 {% endblock %}
 
 <style type="text/css">
@@ -80,15 +81,3 @@
 	text-transform: uppercase ;
 }
 </style>
-
-<script>
-	$('#exampleModal').on('show.bs.modal', function (event) {
-  var button = $(event.relatedTarget) // Button that triggered the modal
-  var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-  var modal = $(this)
-  modal.find('.modal-title').text('New message to ' + recipient)
-  modal.find('.modal-body input').val(recipient)
-})
-</script>

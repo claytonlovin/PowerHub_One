@@ -28,7 +28,7 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th scope="col"></th>
+          
             <th scope="col">Nome</th>
             <th scope="col">Login</th>
             <th scope="col">Telefone</th>
@@ -40,24 +40,37 @@
       
         <tbody>
           {% for contas in account %}
-          <tr>
-            <th scope="row">1</th>            
-            <td>{{ contas['NOME_USUARIO'] }}</td>
-            <td>{{ contas['DS_LOGIN'] }}</td>
-            <td>{{ contas['DS_TELEFONE'] }}</td>
-            <td>{{ contas['DS_EMAIL'] }}</td>
-            {% if session['FL_ADMINISTRADOR'] == 1 %}
-			      <td>Administrador</td>
-              {% else %}
-                        <td>Visualizar</td>
-              {{ super() }}
-              {% endif %}
-            {% endfor %}
-          
+            <tr>           
+              <td>{{ contas['NOME_USUARIO'] }}</td>
+              <td>{{ contas['DS_LOGIN'] }}</td>
+              <td>{{ contas['DS_TELEFONE'] }}</td>
+              <td>{{ contas['DS_EMAIL'] }}</td>
+              {% if contas['FL_ADMINISTRADOR'] == 1 %}
+              <td class="usuario_adm"> <span>Administrador</span>  </td>
+                {% else %}
+                          <td class="usuario_view"><span>Visualizar</span></td>
+                {{ super() }}
+                {% endif %}
+              {% endfor %}
           </tr>
-     
         </tbody>
-        
       </table>
 </div>
+<style>
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+</style>
 {% endblock %}

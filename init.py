@@ -4,6 +4,8 @@ from traceback import print_tb
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from datetime import datetime
+now = datetime.now()
 import re
 
 app = Flask(__name__)
@@ -49,8 +51,6 @@ def login():
             session['NOME_ORGANIZACAO'] = tb_usuario['NOME_ORGANIZACAO']
             session['FL_ADMINISTRADOR'] = tb_usuario['FL_ADMINISTRADOR']
             # REDIRECIONAR
-            
-            print(session['ID_ORGANIZACAO'])
             return redirect(url_for('home'))
         else:
             # VERIFICA SE O LOGIN ESTÁ CORRETO
@@ -118,55 +118,111 @@ def register():
 
 
 # LISTAS OS GRUPOS DO USUARIO
-@app.route('/powerhub/home')
+@app.route('/powerhub/home', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def home():
     if 'loggedin' in session:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT GPU.ID_GRUPO, GPU.ID_USUARIO, GP.NOME_DO_GRUPO FROM TB_GRUPO_USUARIO GPU JOIN TB_GRUPO GP ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_USUARIO = %s', (session['ID_USUARIO'], ))
-        grupos_usuario = cursor.fetchall()
-        list_grupo_usuario =[]
-
-        for row in grupos_usuario:
-            list_grupo_usuario.append(row)
-        cursor.close()
-
-        return render_template('home.html', list_grupos_usuario=list_grupo_usuario)
-
-    # CRIAR NOVO GRUPO
-    if request.method == 'POST' and 'organizacao' in request.form and 'email' in request.form:
+        # LISTA OS GRUPOS DO USUARIO
+        if request.method == 'GET':
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT GPU.ID_GRUPO, GPU.ID_USUARIO, GP.NOME_DO_GRUPO FROM TB_GRUPO_USUARIO GPU JOIN TB_GRUPO GP ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_USUARIO = %s', (session['ID_USUARIO'], ))
+            grupos_usuario = cursor.fetchall()
+            list_grupo_usuario =[]
+            for row in grupos_usuario:
+                list_grupo_usuario.append(row)
+            cursor.close()
+            
+        # CRIAR NOVO GRUPO 
+        criacao_grupo = ''
         if request.method == 'POST' and 'grupo' in request.form:
             DS_NOVO_GRUPO = request.form['grupo']
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('SELECT * FROM TB_GRUPO WHERE NOME_DO_GRUPO = %s', (DS_NOVO_GRUPO, ))
             grupo = cursor.fetchone()
+            data = now.strftime('%Y-%m-%d %H:%M:%S')
+                
             if grupo:
-                msg = 'Já existe um grupo com o mesmo nome!'
+                criacao_grupo = 'Já existe um grupo com o mesmo nome!'
             else:
-                cursor.callproc('sp_create_grupo', (0, DS_NOVO_GRUPO, 1))
+                cursor.callproc('sp_create_grupo', (0, DS_NOVO_GRUPO, data, 1, session['ID_ORGANIZACAO'], 0, 0, session['ID_USUARIO'], session['ID_ORGANIZACAO']))
                 mysql.connection.commit()
-                msg = 'Grupo criado com sucesso!'
+                criacao_grupo = 'Grupo criado com sucesso!'
             return redirect(url_for('home'))
-   
-    return redirect(url_for('login'))
+
+        return render_template('home.html', list_grupos_usuario=list_grupo_usuario, criacao_grupo=criacao_grupo)
+    else:
+        return redirect(url_for('login'))
 
 
 # LISTA RELATORIOS DO GRUPO
-@app.route('/powerhub/listar_relatorios/<int:id_grupo>')
+@app.route('/powerhub/listar_relatorios/<int:id_grupo>', methods=['GET', 'POST', 'DELETE'])
 def listar_relatorios(id_grupo):
     if 'loggedin' in session:
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT GPU.ID_GRUPO, GP.NOME_DO_GRUPO FROM TB_GRUPO_USUARIO GPU JOIN TB_GRUPO GP ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))
-        id_grupo_g = cursor.fetchall()
-        cursor.close()
+        if request.method == 'GET':
+            try:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('SELECT GPU.ID_GRUPO, GP.NOME_DO_GRUPO FROM TB_GRUPO_USUARIO GPU JOIN TB_GRUPO GP ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))
+                id_grupo_g = cursor.fetchall()
+                cursor.close()
 
-        queryRelatorio = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        queryRelatorio.execute('SELECT DISTINCT RL.ID_RELATORIO, RL.DS_NOME_RELATORIO FROM TB_RELATORIO RL JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = RL.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))
-        NOME_RELATORIO = queryRelatorio.fetchall()
+                queryRelatorio = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                queryRelatorio.execute('SELECT DISTINCT RL.ID_RELATORIO, RL.ID_GRUPO,  RL.DS_NOME_RELATORIO FROM TB_RELATORIO RL JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = RL.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))
+                nome_relatorio = queryRelatorio.fetchall()
+                queryRelatorio.close()
 
-        return render_template('listar_relatorios.html', NOME_RELATORIO=NOME_RELATORIO)
-
+                return render_template('listar_relatorios.html', NOME_RELATORIO_GRUPO=nome_relatorio)
+            except:
+                return render_template('error.html')        
+        # INSERIR RELATORIO
+        
+        if request.method == 'POST' and 'nome_relatorio' in request.form and 'link_relatorio' in request.form:
+            DS_NOME_RELATORIO = request.form['nome_relatorio']
+            DS_LINK_RELATORIO = request.form['link_relatorio']
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_RELATORIO WHERE DS_LINK_RELATORIO = %s', (DS_LINK_RELATORIO,))
+            relatorio = cursor.fetchone()
+            msg = ''
+            if relatorio:
+                msg = 'Já existe um relatório com o mesmo link!'
+            else:
+                cursor.callproc('sp_create_relatorio', (0, DS_NOME_RELATORIO, DS_LINK_RELATORIO, id_grupo))
+                mysql.connection.commit()
+                msg = 'Relatório criado com sucesso!'
+            return redirect(url_for('listar_relatorios', id_grupo=id_grupo))
+    
     else:
-        return redirect(url_for('home'))
+        return render_template('error.html')
+
+# LISTA RELATORIOS
+@app.route('/powerhub/visualizar_relatorio/<int:id_relatorio>', methods=['GET', 'POST'])
+def visualizar_relatorio(id_relatorio):
+    if 'loggedin' in session:
+        try:
+            if request.method == 'GET':
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('SELECT * FROM TB_RELATORIO WHERE ID_RELATORIO = %s', (id_relatorio,))
+                visualizar_relatorio = cursor.fetchone()
+                cursor.close()
+                print(visualizar_relatorio['DS_LINK_RELATORIO']) # DEBUG
+                
+        except:
+            return render_template('error.html', visualizar_relatorio=visualizar_relatorio)
+        return render_template('visualizar_relatorio.html', visualizar_relatorio=visualizar_relatorio)
+    return redirect(url_for('login'))
+
+
+# LISTAR USUARIOS DO SISTEMA
+@app.route('/powerhub/profile')
+def profile():
+    if 'loggedin' in session:
+        try:
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.callproc('sp_list_user', (session['ID_ORGANIZACAO'],))
+            account = cursor.fetchall()
+            print(account) # DEBUG
+            return render_template('usuarios.html', account=account)
+        except:
+            return render_template('error.html')
+    return redirect(url_for('login'))
 
 
 #  LISTAR GRUPOS ERROR
@@ -182,37 +238,6 @@ def Grupos():
         except:
             return render_template('error.html', grupos=grupos)
     return redirect(url_for('login'))
-
-
-# LISTA RELATORIOS
-@app.route('/powerhub/visualizar_relatorio/<int:id_relatorio>')
-def visualizar_relatorio(id_relatorio):
-    if 'loggedin' in session:
-        try:
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT * FROM TB_RELATORIO WHERE ID_RELATORIO = %s', (id_relatorio,))
-            visualizar_relatorio = cursor.fetchone()
-            cursor.close()
-            print(visualizar_relatorio['DS_LINK_RELATORIO']) # DEBUG
-            return render_template('visualizar_relatorio.html', visualizar_relatorio=visualizar_relatorio)
-        except:
-            return render_template('error.html', visualizar_relatorio=visualizar_relatorio)
-    return redirect(url_for('login'))
-
-
-# LISTAR USUARIOS DO SISTEMA
-@app.route('/powerhub/profile')
-def profile():
-    if 'loggedin' in session:
-        try:
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT * FROM TB_USUARIO WHERE NOME_USUARIO = %s', (session['NOME_USUARIO'],))
-            account = cursor.fetchone()
-            return render_template('usuarios.html', account=account)
-        except:
-            return render_template('error.html', account=account)
-    return redirect(url_for('login'))
-
 
 
 if __name__ == '__main__':

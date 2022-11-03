@@ -14,7 +14,7 @@
 					
 					<div class="col d-flex flex-row-reverse bd-highlight">
 						{% if session['FL_ADMINISTRADOR'] == True %}
-							<button class="btn btn-primary">Criar Relatório</button>
+							<button class="btn btn-primary" data-toggle="modal" data-target="#myModal-3">Criar Relatório</button>
 						{% else %}
 							{{ super() }}
 						{% endif %}
@@ -25,8 +25,8 @@
 	</div>
 </div>
 <div class="container">
-
-  	{%  for relatorio in NOME_RELATORIO %}
+	<p>{{msg}}</p>
+  	{%  for relatorio in NOME_RELATORIO_GRUPO %}
 		<div class="container-fluid ">
 			<div class="row">
 				<!-- Earnings (Monthly) Card Example -->
@@ -38,6 +38,7 @@
 									<div class="col mr-2">
 										<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
 											<p>{{ relatorio['DS_NOME_RELATORIO']}}</p>
+										
 										</div>
 										<!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
 									</div>
@@ -57,9 +58,37 @@
 		</div>
 		</div>	
   	{% endfor %}
+
+<!-- MODAL CRIAR GRUPO-->
+<div class="modal fade" id="myModal-3">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="p-3" >
+		  <h4 class="modal-title">Inserir Relatório</h4>
+		</div>
+		<form class="user"  method="post">
+		<div class="modal-body">
+			<div class="form-group align-items-center d-flex flex-column">
+				<input type="text" name="nome_relatorio" id="nome_relatorio" class="form-control form-control-user mb-2"
+					id="exampleInputText" placeholder="Evolução das ocorrências mensal" required>
+				<input type="text" name="link_relatorio" id="link_relatorio" class="form-control form-control-user"
+					id="exampleInputText" placeholder="http://exemplo.com" required>
+			</div>
+		</div>
+		<div class="modal-footer d-flex justify-content-betwen flex-row ">
+		  
+		  <button class="btn btn-primary small btn-user btn-block"  type="submit">Inserir Relatório</button>
+		</div>
+		</form>
+		<p>{{mag}}</p>
+	  </div>
+	</div>
+  </div> 
 </div>
 
+<script>
 
+</script>
 {% endblock %}
 
 
