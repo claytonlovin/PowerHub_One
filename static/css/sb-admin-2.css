@@ -11290,18 +11290,5 @@ body.sidebar-toggled footer.sticky-footer {
   height: 91vh !important;
 }
 
-td.usuario_adm, span{
-  background-color: #fad7f8;
-  border-radius: 5px;
-  padding: 3px;
-}
-span{
-  background-color: #fad7f8;
-  border-radius: 5px;
-  padding: 3px;
-}
-.usuario_view, span{
-  background-color: #fad7f8;
-  border-radius: 5px;
-  padding: 3px;
-}
+
+
