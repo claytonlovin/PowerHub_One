@@ -11,43 +11,47 @@
 
 <div class="card o-hidden border-0 shadow-lg  p-0">
     <div class="card-header">
-        <h2>Criar novo usuario</h2>
+        <h2>Editar o usuario: <span>{{account['NOME_USUARIO'] }}</span></h2>
     </div>
   <div class="card-body ">
-    <form class="user" action="{{ url_for('criar_usuario')}}" method="post" autocomplete="off">
+    <form class="user" action="" method="post" autocomplete="off">
       <!--ORGANIZAÇÃO -->
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="text" class="form-control form-control-user" id="nome"
-              name="nome" placeholder="Nome Completo">
+              name="nome" placeholder="Nome Completo" value="{{account['NOME_USUARIO']}}">
           </div>
           <div class="col-sm-6">
               <input type="text" class="form-control form-control-user" id="login"
-              name="login" placeholder="login">
+              name="login" placeholder="login" value="{{account['DS_LOGIN']}}">
           </div>
       </div>
       <!-- DADOS -->
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="text" class="form-control form-control-user" id="telefone"
-              name="telefone" placeholder="(01) 0000-0000">
+              name="telefone" placeholder="(01) 0000-0000" value="{{account['DS_TELEFONE']}}">
           </div>
           <div class="col-sm-6">
               <input type="email" class="form-control form-control-user" id="email"
-              name="email" placeholder="exemplo@email.com">
+              name="email" placeholder="exemplo@email.com" value="{{ account['DS_EMAIL']}}">
           </div>
       </div>
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="password" class="form-control form-control-user"
-                  id="senha"  name="senha" placeholder="senha...">
+                  id="senha"  name="senha" placeholder="senha..." value="{{ account['DS_SENHA'] }}">
           </div>
           <div class="col-sm-6">
               <input type="password" name="confirmar_senha" class="form-control form-control-user"
-                  id="confirmar_senha" placeholder="Confirmar senha  ...">
+                  id="confirmar_senha" placeholder="Confirmar senha  ..." value="{{ account['DS_SENHA'] }}">
           </div>
       </div>
-  <button class="btn btn-primary small btn-user btn-block " type="submit" type="submit">Criar Usuário</button>
+      <div class="custom-control custom-switch mb-3">
+        <input type="checkbox" class="custom-control-input" id="customSwitch1" value="{{ account['FL_ADMINISTRADOR'] }}">
+        <label class="custom-control-label" for="customSwitch1">Administrador</label>
+      </div>
+  <button class="btn btn-success small btn-user btn-block " type="submit" type="submit">Salvar</button>
       <code class="aling-center">{{msg}}</code>
   </form>
   </div>
@@ -70,6 +74,9 @@
 }
 code{
     text-align: center;
+}
+span{
+    font-weight: bold;
 }
 </style>
 {% endblock %}

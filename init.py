@@ -218,8 +218,8 @@ def list_user():
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.callproc('sp_list_user', (session['ID_ORGANIZACAO'],))
             account = cursor.fetchall()
-            print(account) # DEBUG
-            return render_template('usuarios.html', account=account)
+           # print(account['ID_USUARIO']) # DEBUG
+            return render_template('usuarios.html', contas=account)
         except:
             return render_template('error.html')
     return redirect(url_for('login'))
@@ -256,22 +256,52 @@ def criar_usuario():
         except:
             return render_template('error.html')
 
+# EDITAR USUARIO
+@app.route('/powerhub/editar_usuario/<int:id_usuario>', methods=['GET', 'POST'])
+def editar_usuario(id_usuario):
+    if 'loggedin' in session:
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_USUARIO WHERE ID_USUARIO = %s', (id_usuario,))
+            account = cursor.fetchone()
+            if request.method == 'POST' and 'nome' in request.form and 'login' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form:
+                nome = request.form['nome']
+                login = request.form['login']
+                telefone = request.form['telefone']
+                email = request.form['email']
+                senha = request.form['senha']
+                confirmar_senha = request.form['confirmar_senha']
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_EMAIL = %s', (email,))
+                account = cursor.fetchone()
+                if not nome or not email or not senha or not confirmar_senha:
+                    msg = 'Por favor, preencha todos os campos!'
+                elif senha != confirmar_senha:
+                    msg = 'As senhas não conferem!'
+                else:
+                    cursor.execute('UPDATE TB_USUARIO SET NOME_USUARIO = %s, DS_TELEFONE = %s, DS_EMAIL = %s, DS_LOGIN = %s, DS_SENHA = %s WHERE ID_USUARIO = %s', (nome, telefone, email, login, senha, id_usuario,))
+                    mysql.connection.commit()
+                    msg = 'Conta atualizada com sucesso!'
+                    return redirect(url_for('list_user'))            
+            return render_template('v_editar_usuario.html', account=account) 
         
-
 
 #  LISTAR GRUPOS ERROR
 @app.route('/powerhub/grupos')
 def Grupos():
     if 'loggedin' in session:
-        try:
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT DISTINCT GP.NOME_DO_GRUPO, GP.ID_GRUPO FROM TB_GRUPO GP JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_ORGANIZACAO = (%s)', (session['ID_ORGANIZACAO'],))
-            grupos = cursor.fetchall()
-            cursor.close()
+        
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT  GP.NOME_DO_GRUPO, GP.ID_GRUPO, GPU.ID_USUARIO, US.NOME_USUARIO FROM TB_GRUPO GP JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = GP.ID_GRUPO LEFT OUTER JOIN TB_USUARIO US ON US.ID_USUARIO = GPU.ID_USUARIO WHERE GPU.ID_ORGANIZACAO = (%s)', (session['ID_ORGANIZACAO'],))
+        grupos = cursor.fetchall()
+        cursor.close()
 
-            return render_template('v_grupos.html', grupos=grupos)
-        except:
-            return render_template('error.html', grupos=grupos)
+        # TODOS OS USUARIOS
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM TB_USUARIO WHERE ID_ORGANIZACAO = (%s)', (session['ID_ORGANIZACAO'],))
+        usuarios = cursor.fetchall()
+
+        return render_template('v_grupos.html', grupos=grupos, usuarios=usuarios) 
+        
 
 
 if __name__ == '__main__':

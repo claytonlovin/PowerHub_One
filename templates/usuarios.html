@@ -43,7 +43,7 @@
   
       
         <tbody>
-          {% for contas in account %}
+          {% for contas in contas %}
             <tr>           
               <td>{{ contas['NOME_USUARIO'] }}</td>
               <td>{{ contas['DS_LOGIN'] }}</td>
@@ -55,13 +55,18 @@
                           <td class="usuario_view"><span>Visualizar</span></td>
                 {{ super() }}
                 {% endif %}
-              {% endfor %}
+              
               {% if session['FL_ADMINISTRADOR'] == True %}
-              <td><a href="#" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a></td>
+              <td>
+                <div class="">
+                  <a href="{{ url_for('editar_usuario', id_usuario=contas['ID_USUARIO'])}}" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a>
+                  <a href="#" type="submit" id="id_grupo"><i class="fas fa-trash fa-2x text-gray-300"></i></a>
+                </div>
+              </td>
               {% else %}
                 {{ super() }}
               {% endif %}
-
+              {% endfor %}
           </tr>
         </tbody>
       </table>
