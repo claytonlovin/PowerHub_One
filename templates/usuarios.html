@@ -13,7 +13,8 @@
 					
 					<div class="col d-flex flex-row-reverse bd-highlight">
 						{% if session['FL_ADMINISTRADOR'] == True %}
-							<button class="btn btn-primary">Criar Usuarios</button>
+              <a href="{{ url_for('criar_usuario') }}" class="btn btn-primary">Criar Usuário</a>
+							
 						{% else %}
 							{{ super() }}
 						{% endif %}
@@ -34,6 +35,9 @@
             <th scope="col">Telefone</th>
             <th scope="col">Email</th>
             <th scope="col">Permissão</th>
+           {% if session['FL_ADMINISTRADOR'] == True %}
+            <th scope="col">Ações</th>
+           {% endif %}
           </tr>
         </thead>
   
@@ -52,6 +56,12 @@
                 {{ super() }}
                 {% endif %}
               {% endfor %}
+              {% if session['FL_ADMINISTRADOR'] == True %}
+              <td><a href="#" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a></td>
+              {% else %}
+                {{ super() }}
+              {% endif %}
+
           </tr>
         </tbody>
       </table>

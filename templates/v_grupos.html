@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+		
+
+
+<h2>Criar novo usuario</h2>
+
+<div class="card o-hidden border-0 shadow-lg  p-0">
+  <div class="card-body ">
+    <div class="">
+      {% for grupo in grupos%}
+        <div class="col-6">{{ grupo['NOME_DO_GRUPO']}}</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<style>
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+code{
+    text-align: center;
+}
+</style>
+{% endblock %}

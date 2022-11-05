@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+		
+
+
+<h2>Criar novo usuario</h2>
+
+<div class="card o-hidden border-0 shadow-lg  p-0">
+  <div class="card-body ">
+    <form class="user" action="{{ url_for('criar_usuario')}}" method="post" autocomplete="off">
+      <!--ORGANIZAÇÃO -->
+      <div class="form-group row">
+          <div class="col-sm-6 mb-3 mb-sm-0">
+              <input type="text" class="form-control form-control-user" id="nome"
+              name="nome" placeholder="Nome Completo">
+          </div>
+          <div class="col-sm-6">
+              <input type="text" class="form-control form-control-user" id="login"
+              name="login" placeholder="login">
+          </div>
+      </div>
+      <!-- DADOS -->
+      <div class="form-group row">
+          <div class="col-sm-6 mb-3 mb-sm-0">
+              <input type="text" class="form-control form-control-user" id="telefone"
+              name="telefone" placeholder="(01) 0000-0000">
+          </div>
+          <div class="col-sm-6">
+              <input type="email" class="form-control form-control-user" id="email"
+              name="email" placeholder="exemplo@email.com">
+          </div>
+      </div>
+      <div class="form-group row">
+          <div class="col-sm-6 mb-3 mb-sm-0">
+              <input type="password" class="form-control form-control-user"
+                  id="senha"  name="senha" placeholder="senha...">
+          </div>
+          <div class="col-sm-6">
+              <input type="password" name="confirmar_senha" class="form-control form-control-user"
+                  id="confirmar_senha" placeholder="Confirmar senha  ...">
+          </div>
+      </div>
+  <button class="btn btn-primary small btn-user btn-block " type="submit" type="submit">Criar Usuário</button>
+      <code class="aling-center">{{msg}}</code>
+  </form>
+  </div>
+</div>
+<style>
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+code{
+    text-align: center;
+}
+</style>
+{% endblock %}

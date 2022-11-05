@@ -103,7 +103,7 @@ def register():
                 cursor.callproc('sp_create_organizacao_and_user', (
                     0, DS_ORGANIZACAO, 0, 1,
                     0, 'PW Grupo', 0, 1, 0,
-                    0, DS_NOME, 0, DS_NUMERO_TEL, DS_EMAIL, DS_USUARIO, DS_SENHA, 1,
+                    0, DS_NOME, DS_NUMERO_TEL, DS_EMAIL, DS_USUARIO, DS_SENHA, 1, 0,
                     0, 0, 0, 0))
                 mysql.connection.commit()
                 msg = 'Usuário criado com sucesso'
@@ -211,8 +211,8 @@ def visualizar_relatorio(id_relatorio):
 
 
 # LISTAR USUARIOS DO SISTEMA
-@app.route('/powerhub/profile')
-def profile():
+@app.route('/powerhub/user')
+def list_user():
     if 'loggedin' in session:
         try:
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -224,6 +224,40 @@ def profile():
             return render_template('error.html')
     return redirect(url_for('login'))
 
+# CRIAR USUARIO
+@app.route('/powerhub/criar_usuario', methods=['GET', 'POST'])
+def criar_usuario():
+    if 'loggedin' in session:
+        try:
+            msg = ''
+            if request.method == 'POST' and 'nome' in request.form and 'login' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form:
+                nome = request.form['nome']
+                login = request.form['login']
+                telefone = request.form['telefone']
+                email = request.form['email']
+                senha = request.form['senha']
+                confirmar_senha = request.form['confirmar_senha']
+                
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_EMAIL = %s', (email,))
+                account = cursor.fetchone()
+                if account:
+                    msg = 'Já existe uma conta com esse e-mail!'
+                elif not nome or not email or not senha or not confirmar_senha:
+                    msg = 'Por favor, preencha todos os campos!'
+                elif senha != confirmar_senha:
+                    msg = 'As senhas não conferem!'
+                else:
+                    cursor.execute('INSERT INTO TB_USUARIO VALUES(%s, %s, %s, %s, %s, %s, %s, %s)', (0, nome, telefone, email, login, senha, 0, session['ID_ORGANIZACAO'], ))
+                    mysql.connection.commit()
+                    msg = 'Conta criada com sucesso!'
+                    return redirect(url_for('list_user'))            
+            return render_template('criar_usuario.html', msg=msg)
+        except:
+            return render_template('error.html')
+
+        
+
 
 #  LISTAR GRUPOS ERROR
 @app.route('/powerhub/grupos')
@@ -231,13 +265,13 @@ def Grupos():
     if 'loggedin' in session:
         try:
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT GP.NOME_DO_GRUPO, GP.ID_GRUPO FROM TB_GRUPO GP JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_ORGANIZACAO = (%s)', (30,))
+            cursor.execute('SELECT DISTINCT GP.NOME_DO_GRUPO, GP.ID_GRUPO FROM TB_GRUPO GP JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_ORGANIZACAO = (%s)', (session['ID_ORGANIZACAO'],))
             grupos = cursor.fetchall()
             cursor.close()
-            return render_template('grupos.html', grupos=grupos)
+
+            return render_template('v_grupos.html', grupos=grupos)
         except:
             return render_template('error.html', grupos=grupos)
-    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':

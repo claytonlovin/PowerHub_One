@@ -48,7 +48,8 @@
             </li>
             <!-- Nav Item - Dashboard -->
             <li class="nav-item">
-l            <!-- Heading -->
+                {% if session['FL_ADMINISTRADOR'] == True %}
+            <!-- Heading -->
             <div class="sidebar-heading">
                 Configurações
             </div>
@@ -84,9 +85,11 @@ l            <!-- Heading -->
                     <span>Grupos</span></a>
             </li>
 
-            
+            {% else %}
+    			
+			{% endif %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('profile') }}">
+                <a class="nav-link" href="{{ url_for('list_user') }}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Usuários</span></a>
             </li>
