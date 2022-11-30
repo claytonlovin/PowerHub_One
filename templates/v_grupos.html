@@ -1,84 +1,58 @@
 {% extends 'layout.html' %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-
-		
-
-
-
-
-<div class="card accordion mb-4" id="accordionExample">
-  <div class="card-header d-flex flex-row align-items-center justify-content-between">
-    <div class="col-xl-6">
-      <h2>Usuários Vinculados</h2>
-    </div>
-    <div class="col-xl-6">
-      <form action="" method="post">
-        <div class="input-group  d-flex alig-item-center">
-          <select class="custom-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-            <option selected>Grupos...</option>
-            {% for grupo in grupos %}
-              <option id="{{ grupo['ID_GRUPO']}}" value="{{grupo['ID_GRUPO']}}">{{grupo['NOME_DO_GRUPO']}}</option>
-            {% endfor %}
-          </select>
-        
-          <div class="input-group-append">
-            <a href="#" class=" btn btn-outline-secondary">Buscar</a>
+				<div class="row">
+					<div class="col-xl-12 col-md-6 mb-4">
+						<div class="row align-items-center">
+							<div class="col">
+								<h2>Meus grupos</h2>
+							</div>
+							
+							<div class="col d-flex flex-row-reverse bd-highlight">
+								
+							</div>
+						</div>
+						<p>{{ criacao_grupo }}</p>
+					</div>
+				</div>
+		<div class="context-card">
+			{% for grupos_usuario in grupos: %} 
+				<div class="row">
+					<!-- Earnings (Monthly) Card Example -->
+					
+            <div class="col-xl-12 col-md-12 mb-4">
+              <div class="card border-left-danger shadow h-100 py-2" id="grupo-list">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        <p class="">{{ grupos_usuario['NOME_DO_GRUPO']}}</p>
+                        
+                      </div>
+                      <!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
+                    </div>
+                    <div class="col-auto"> 
+                        <a href="{{ url_for('vincular_usuario', id_grupo=grupos_usuario['ID_GRUPO']) }}" type="submit" id="id_grupo"><i class="fas fa-user fa-2x text-primary-300"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
           </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="card-body d-flex flex-row align-items-center justify-content-center">
-      <h4>Nenhum usuario vinculado</h4>
-  </div>
-</div>
+		  </div>
+		{% endfor %}
 
-<!-- USUARIOS NÃO VINCULADOS -->
-<div class="card">
-  <div class="card-header">
-    <h2>Usuários não vinculados</h2>
-  </div>
-  <div class="card-body">
-    {% for usuario in usuarios %}
-      <div class="d-flex flex-row align-items-center justify-content-between ">
-        <p>{{ usuario['NOME_USUARIO']}}</p>
-        <a href="">Vicular</a>
-      </div>
-    {% endfor %}
+		<!-- -->		
+		</div>
+		
+{% endblock %}
 
-  </div>
-  <div></div>
-</div>  
-<style>
-.card-header{
-    background-color: #fff !important;
-  }
-.usuario_adm, .usuario_view{
-    display: flex;
-  }
- .usuario_adm span{
-  background-color: #abf7b9;
-  width: 100%;
-  border-radius: 5px;
-  padding: 2px 5px;
-}
-.usuario_view span{
-  background-color: #fc799757;
-  width: 100%;
-  border-radius: 5px;
-  padding: 2px 5px;
-}
-.user-grupo span{
-  background-color: #abf7b9;
-  padding: 7px;
-  border-radius: 5px;
-}
+<style type="text/css">
 
-code{
-    text-align: center;
+.grupo p{
+	font-size: 14px;
+	font-weight: 300;
+	text-transform: uppercase ;
 }
 </style>
-{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+<div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Usuários Vinculados
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        {% for usuario in usuarios%}
+        <div class="d-flex flex-row align-items-center justify-content-between ">
+            <p class="v-vinculado"><span>{{ usuario['NOME_USUARIO']}}</span></p>
+            <a href="#" class=" btn btn-outline-danger">Excluir</a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Usuários não vinculados
+        </button>
+      </h5>
+    </div>
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="card-body">
+          {% for usuario in usuarios_nao_vinculados%}
+          <form action="{{url_for('vincular_usuario', id_grupo = usuario['ID_GRUPO'], id_usuario=usuario['ID_USUARIO']) }}" method="post">
+            <div class="d-flex flex-row align-items-center justify-content-between ">
+              <p class="vn-vinculado"><span>{{ usuario['NOME_USUARIO']}}</span></p>
+            <button class="btn btn-outline-warning" type="submit">Vicular</button>
+          </form>
+        </div>
+    {% endfor %}
+      </div>
+    </div>
+  
+  </div>
+  
+</div>	
+
+
+
+
+<style>
+.v-vinculado{
+    background-color: #fd8e86;
+    padding: 0 10px;
+    border-radius: 3px;
+    color: #fff;
+  }
+  .vn-vinculado{
+    background-color: #86fdbe;
+    padding: 0 10px;
+    border-radius: 3px;
+    color: #fff;
+  }
+.card-header{
+    background-color: #fff !important;
+  }
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.user-grupo span{
+  background-color: #abf7b9;
+  padding: 7px;
+  border-radius: 5px;
+}
+
+code{
+    text-align: center;
+}
+</style>
+{% endblock %}

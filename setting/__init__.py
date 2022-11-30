@@ -1,0 +1,1 @@
+from setting.config import *

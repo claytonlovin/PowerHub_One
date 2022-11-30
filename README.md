@@ -9,24 +9,25 @@ PowerHub One é ideal para publicação de relatório POWERBI.
 
 <p>Como instalar o projeto</p>
 
-```
-# Clone o repositório
 
+# Clone o repositório
+```
 $ https://github.com/claytonlovin/PowerHub_One
 
-# Instale o Poetry
+``` 
 
-$ pip install poetry
+# Instale o a dependencias
 
-# Instalar as dependências 
+```
+pip install -r requirements.txt
+```
 
-$ poetry install
 
 # Executar o projeto
 
+```
 $ py init.py
-
 
 ```
 
-<p>Não esqueça de configurar o banco de dados </p>
+Não esqueça de configurar o banco de dados em ```setting/config.py```.
