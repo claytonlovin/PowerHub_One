@@ -35,14 +35,18 @@
     </div>
       <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
         <div class="card-body">
-          {% for usuario in usuarios_nao_vinculados%}
+         <!--- {% for usuario in usuarios_nao_vinculados%}
           <form action="{{url_for('vincular_usuario', id_grupo = usuario['ID_GRUPO'], id_usuario=usuario['ID_USUARIO']) }}" method="post">
             <div class="d-flex flex-row align-items-center justify-content-between ">
               <p class="vn-vinculado"><span>{{ usuario['NOME_USUARIO']}}</span></p>
+              <p class="vn-vinculado"><span>{{ usuario['ID_USUARIO']}}</span></p>
+              <p class="vn-vinculado"><span>{{ usuario['ID_ORGANIZACAO']}}</span></p>
+
             <button class="btn btn-outline-warning" type="submit">Vicular</button>
           </form>
         </div>
-    {% endfor %}
+    {% endfor %} -->
+        <p> Em desenvolvimento</p>
       </div>
     </div>
   

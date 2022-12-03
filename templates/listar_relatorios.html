@@ -14,7 +14,7 @@
 					
 					<div class="col d-flex flex-row-reverse bd-highlight">
 						{% if session['FL_ADMINISTRADOR'] == True %}
-							<button class="btn btn-primary" data-toggle="modal" data-target="#myModal-3">Criar Relatório</button>
+							<button class="btn btn-dark" data-toggle="modal" data-target="#myModal-3">Criar Relatório</button>
 						{% else %}
 							{{ super() }}
 						{% endif %}
@@ -36,16 +36,16 @@
 							<div class="card-body">
 								<div class="row no-gutters align-items-center">
 									<div class="col mr-2">
-										<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+										<div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
 											<p>{{ relatorio['DS_NOME_RELATORIO']}}</p>
 										
 										</div>
 										<!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
 									</div>
 									<div class="col-auto">
-										<a  href="{{ url_for('visualizar_relatorio', id_relatorio=relatorio['ID_RELATORIO'])}}"><i class="fas fa-eye fa-2x text-primary-300"></i></a>
+										<a  href="{{ url_for('visualizar_relatorio', id_relatorio=relatorio['ID_RELATORIO'])}}"><i class="fas fa-eye fa-2x text-gray-300"></i></a>
 										{% if session['FL_ADMINISTRADOR'] == True %}
-											<a href="#"><i class="fas fa-trash fa-2x text-primary-300"></i></a>
+											<a href="{{ url_for('deletar_relatorio', id_relatorio=relatorio['ID_RELATORIO'] )}}"><i class="fas fa-trash fa-2x text-gray-300"></i></a>
 										{% else %}
 											{{ super() }}
 										{% endif %}
@@ -77,7 +77,7 @@
 		</div>
 		<div class="modal-footer d-flex justify-content-betwen flex-row ">
 		  
-		  <button class="btn btn-primary small btn-user btn-block"  type="submit">Inserir Relatório</button>
+		  <button class="btn btn-dark small btn-user btn-block"  type="submit">Inserir Relatório</button>
 		</div>
 		</form>
 		<p>{{mag}}</p>

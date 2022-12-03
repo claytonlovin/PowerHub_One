@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from setting.config import *
 import MySQLdb.cursors
 from datetime import datetime
 now = datetime.now()
-
+import re
 
 # LANDPAGE
 @app.route('/', methods=['GET', 'POST'])
@@ -17,11 +17,11 @@ def login():
     # Verifique se existem solicitações POST "username" e "password" (formulário enviado pelo usuário)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
-        password = request.form['password']
+        password = request.form['password'] 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.callproc('sp_autenticaUsuario', (username, password))
         tb_usuario = cursor.fetchone()
-        print(tb_usuario)
+       
         if tb_usuario:
            # CRIANDO DADOS DE SESSÃO
             session['loggedin'] = True
@@ -34,9 +34,13 @@ def login():
             session['FL_ADMINISTRADOR'] = tb_usuario['FL_ADMINISTRADOR']
             # REDIRECIONAR
             return redirect(url_for('home'))
+        
+        elif username == '' and password == '':
+            flash('Por favor, preencha todos os campos')
+        
         else:
             # VERIFICA SE O LOGIN ESTÁ CORRETO
-            msg = 'Usuário e senha incorretos!'
+            flash('Usuário e senha incorretos!')
         
     return render_template('login.html', msg=msg)
 
@@ -70,16 +74,19 @@ def register():
 
             # VERIFICA SE O USUARIO EXISTE NO BANCO
             if account:
-                msg = 'Alguém está utilizando esse mesmo login ou senha!'
+                flash('Alguém está utilizando esse mesmo login ou senha!')
             # VERIFICA SE O CAMPO ESTÁ VAZIO
             if not DS_ORGANIZACAO or not DS_NOME or not DS_EMAIL or not DS_NUMERO_TEL or not DS_USUARIO or not DS_SENHA:
-                msg = 'Por favor, preencha o formulário!'
+                flash('Por favor, preencha o formulário!')
             # VERIFICANDO SE O EMAIL É VALIDO
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', DS_EMAIL):
-                msg = 'E-mail inválido!'
+                flash('E-mail inválido!')
+            # VERIFICANDO SE O TELEFONE É VALIDO
+            elif not re.match(r'[0-9]{2}[0-9]{5}[0-9]{4}', DS_NUMERO_TEL):
+                flash('Telefone inválido!')
             # VERIFICA SE O NOME DO USUARIO É VALIDO
             elif not re.match(r'[A-Za-z0-9]+', DS_USUARIO):
-                msg = 'O nome de usuário deve conter apenas caracteres e números!'
+                flash('O nome de usuário deve conter apenas caracteres e números!')
             
             else:
                 cursor.callproc('sp_create_organizacao_and_user', (
@@ -88,10 +95,10 @@ def register():
                     0, DS_NOME, DS_NUMERO_TEL, DS_EMAIL, DS_USUARIO, DS_SENHA, 1, 0,
                     0, 0, 0, 0))
                 mysql.connection.commit()
-                msg = 'Usuário criado com sucesso'
+                flash('Usuário criado com sucesso')
 
         elif request.method == 'POST':
-            msg = 'Por favor, preencha o formulário!'
+            flash('Por favor, preencha o formulário!')
         
         return render_template('register.html', msg=msg)
 
@@ -114,7 +121,6 @@ def home():
             cursor.close()
             
         # CRIAR NOVO GRUPO 
-        criacao_grupo = ''
         if request.method == 'POST' and 'grupo' in request.form:
             DS_NOVO_GRUPO = request.form['grupo']
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -123,18 +129,71 @@ def home():
             data = now.strftime('%Y-%m-%d %H:%M:%S')
                 
             if grupo:
-                criacao_grupo = 'Já existe um grupo com o mesmo nome!'
+                flash('Já existe um grupo com o mesmo nome!')
             else:
                 cursor.callproc('sp_create_grupo', (0, DS_NOVO_GRUPO, data, 1, session['ID_ORGANIZACAO'], 0, 0, session['ID_USUARIO'], session['ID_ORGANIZACAO']))
                 mysql.connection.commit()
-                criacao_grupo = 'Grupo criado com sucesso!'
+                flash('Grupo criado com sucesso!')
             return redirect(url_for('home'))
+        
 
-        return render_template('home.html', list_grupos_usuario=list_grupo_usuario, criacao_grupo=criacao_grupo)
+        return render_template('home.html', list_grupos_usuario=list_grupo_usuario)
     else:
         return redirect(url_for('login'))
 
 
+
+# EDITAR GRUPOS
+@app.route('/powerhub/editar-grupo/<int:id>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def editar_grupo(id):
+    if 'loggedin' in session:
+        if request.method == 'GET':
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_GRUPO WHERE ID_GRUPO = %s', (id, ))
+            grupo = cursor.fetchone()
+            cursor.close()
+            return render_template('editar-grupo.html', grupo=grupo)
+        if request.method == 'POST' and 'grupo' in request.form:
+            DS_GRUPO = request.form['grupo']
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_GRUPO WHERE NOME_DO_GRUPO = %s', (DS_GRUPO, ))
+            grupo = cursor.fetchone()
+            data = now.strftime('%Y-%m-%d %H:%M:%S')
+            if grupo:
+                flash('Já existe um grupo com o mesmo nome!')
+            else:
+                cursor.execute('UPDATE TB_GRUPO SET NOME_DO_GRUPO = %s WHERE ID_GRUPO = %s', (DS_GRUPO, id))
+                #cursor.callproc('sp_update_grupo', (id, DS_GRUPO, data, 1, session['ID_ORGANIZACAO'], 0, 0, session['ID_USUARIO'], session['ID_ORGANIZACAO']))
+                mysql.connection.commit()
+                flash('Grupo atualizado com sucesso!')
+            return redirect(url_for('home'))
+        
+        elif request.method == 'put':
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_GRUPO_USUARIO WHERE ID_GRUPO = %s', (id, ))
+            grupo = cursor.fetchone()
+            if grupo:
+                flash('Não é possível excluir um grupo que possui um ou mais usuários!')
+            return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
+
+# DELETAR GRUPO
+@app.route('/powerhub/deletar-grupo/<int:id>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def deletar_grupo(id):
+    if 'loggedin' in session:
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_GRUPO_USUARIO WHERE ID_GRUPO = %s', (id, ))
+            grupo = cursor.fetchone()
+            if grupo:
+                flash('Não é possível excluir um grupo que possui um ou mais usuários!')
+            else:
+                cursor.execute('DELETE FROM TB_GRUPO WHERE ID_GRUPO = %s', (id, ))
+                mysql.connection.commit()
+                flash('Grupo excluído com sucesso!')
+            return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
 # LISTA RELATORIOS DO GRUPO
 @app.route('/powerhub/listar_relatorios/<int:id_grupo>', methods=['GET', 'POST', 'DELETE'])
 def listar_relatorios(id_grupo):
@@ -191,7 +250,16 @@ def visualizar_relatorio(id_relatorio):
         return render_template('visualizar_relatorio.html', visualizar_relatorio=visualizar_relatorio)
     return redirect(url_for('login'))
 
-
+# deletar relatorio
+@app.route('/powerhub/deletar_relatorio/<int:id_relatorio>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def deletar_relatorio(id_relatorio):
+    if 'loggedin' in session:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('DELETE FROM TB_RELATORIO WHERE ID_RELATORIO = %s', (id_relatorio, ))
+                mysql.connection.commit()
+                flash('Relatório excluído com sucesso!')
+                return redirect(url_for('home'))
+    return redirect(url_for('login'))
 # LISTAR USUARIOS DO SISTEMA
 @app.route('/powerhub/user')
 def list_user():
@@ -292,9 +360,7 @@ def vincular_usuario(id_grupo):
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT distinct GPU.ID_GRUPO, us.* FROM TB_USUARIO US JOIN TB_GRUPO_USUARIO GPU ON US.ID_USUARIO <> GPU.ID_USUARIO JOIN TB_GRUPO GP ON GPU.ID_GRUPO <> GP.ID_GRUPO WHERE  US.ID_ORGANIZACAO = (%s) AND GPU.ID_GRUPO = (%s)', (session['ID_ORGANIZACAO'], id_grupo,))
                 usuarios_nao_vinculados = cursor.fetchall()
-                cursor.close()
-                
-                
+                cursor.close()                
 
             if request.method == 'POST' and 'id_usuario' in request.form:
                 id_usuario = request.form['id_usuario']

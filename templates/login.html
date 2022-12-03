@@ -30,10 +30,14 @@
         <div class="row justify-content-center">
 
             <div class="col-xl-5 col-lg-12 col-md-9">
-
+                
                 <div class="card o-hidden border-0 shadow-lg my-5">
+                        {% for message in get_flashed_messages() %}
+                            <p class="aler alert-danger block text-center">{{ message }}</p>
+                        {% endfor %}
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
+
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="p-5">
@@ -53,12 +57,11 @@
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
                                                 <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Remember
-                                                    Me</label>
+                                                <!--<label class="custom-control-label" for="customCheck">Remember
+                                                    Me</label>-->
                                             </div>
                                         </div>
-                                        
-                                        <button class="btn btn-primary small btn-user btn-block " type="submit">Entrar</button>
+                                        <button class="btn btn-dark small btn-user btn-block " type="submit">Entrar</button>
                                         
                                         <hr>
                                         <a href="{{ url_for('register') }}" class="btn btn-success btn-user btn-block">
@@ -67,10 +70,6 @@
                                       
                                     </form>
                                     <hr>
-                                    <div class="text-center">
-                                        <a class="small" href="#">Recuperar senha Password?</a>
-                                    </div>
-                                    
                                 </div>
                             </div>
                         </div>

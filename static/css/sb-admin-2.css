@@ -11280,9 +11280,8 @@ body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
 
-.msg{
-  text-align: center;
-  color: #fff;
+code{
+  text-align: center !important;
 }
 
 .ratio iframe{

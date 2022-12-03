@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+
+{% block title %}Editar Grupos{% endblock %}
+
+{% block content %}
+
+		
+
+
+
+
+<div class="card o-hidden border-0 shadow-lg  p-0">
+    <div class="card-header">
+        <h2>Editar o Grupo: <span>{{grupo['NOME_DO_GRUPO'] }}</span></h2> 
+    </div>
+  <div class="card-body ">
+    <form class="user" action="" method="post" autocomplete="off">
+      <!--ORGANIZAÇÃO -->
+      <div class="form-group align-items-center d-flex flex-column">
+        <input type="text" name="grupo" id="grupo" class="form-control form-control-user"
+          id="exampleInputText" value='{{grupo['NOME_DO_GRUPO'] }}'>
+      </div>
+  <button class="btn btn-success small btn-user btn-block " type="submit" >Salvar</button>
+ 
+  </form>
+
+  <form class="user py-2" action="{{ url_for('deletar_grupo', id=grupo['ID_GRUPO']) }}" autocomplete="off">
+    <button class="btn btn-danger small btn-user btn-block " type="submit" >Excluir</button>
+  </form>
+  </div>
+</div>
+<style>
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+code{
+    text-align: center;
+}
+span{
+    font-weight: bold;
+}
+</style>
+{% endblock %}

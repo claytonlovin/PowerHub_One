@@ -11,10 +11,7 @@
     .card-body{
         padding: 0 !important;
     }
-    .fas{
-        font-size: 20px;
-        padding: 0 30px;
-    }
+    
     </style>
 <div class="">
     <div class="row">
@@ -34,13 +31,13 @@
                                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                            
                                 aria-labelledby="dropdownMenuLink">
                                 <div class="dropdown-header">Menu de opções:</div>
-                                <a class="dropdown-item" href="#">Editar</a>
-                                <a class="dropdown-item" href="#">Enviar para e-mail</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#myModal-1">Enviar para e-mail</a>
                                 {% if session['FL_ADMINISTRADOR'] == True %}
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Excluir Relatório</a>
+                                <a class="dropdown-item" href="{{ url_for('deletar_relatorio', id_relatorio=visualizar_relatorio['ID_RELATORIO'] )}}">Excluir Relatório</a>
                                         {% else %}
                                             {{ super() }}
                                         {% endif %}
@@ -65,7 +62,29 @@
         </div>
     </div>
 </div>
-
+<! -- modal -->
+<div class="modal fade" id="myModal-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="p-3" >
+          <h5 class="modal-title text-center">Em Desenvolvimento</h5>
+        </div>
+        <!--<form class="user"  method="post">
+        <div class="modal-body">
+            <div class="form-group align-items-center d-flex flex-column">
+                <input type="text" name="grupo" id="grupo" class="form-control form-control-user"
+                    id="exampleInputText" placeholder="Equipe Financeira" required>
+            </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-betwen flex-row ">
+          
+          <button class="btn btn-dark small btn-user btn-block"  type="submit">Criar Grupo</button>
+        </div> -->
+        </form>
+        
+      </div>
+    </div>
+  </div>  
 
 {% endblock %}
 

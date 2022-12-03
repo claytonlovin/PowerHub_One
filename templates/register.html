@@ -21,15 +21,16 @@
 
 </head>
 
-<body class="bg-gradient-primary">
+<body class="bg-gradient-dark">
 
     <div class="container">
 
         <div class="card o-hidden border-0 shadow-lg my-5">
+            {% for message in get_flashed_messages() %}
+                <p class="aler alert-danger block text-center">{{ message }}</p>
+               {% endfor %}
             <div class="card-body p-0">
-                <!-- Nested Row within Card Body -->
                 <div class="row">
-                    
                     <div class="col-lg-12">
                         <div class="col-lg-12">
                         <div class="p-5">
@@ -69,14 +70,13 @@
                                             id="password" placeholder="Senha...">
                                     </div>
                                 </div>
-                            <button class="btn btn-primary small btn-user btn-block " type="submit" type="submit">Criar Conta</button>
+                            <button class="btn btn-warning small btn-user btn-block " type="submit" type="submit">Criar Conta</button>
                                 
                             </form>
                             <hr>
                             <div class="text-center">
                                 <a class="small" href="{{url_for('login')}}">Entrar</a>
                             </div>
-							<p class="msg">{{msg}}</p>
  
                         </div>
                     </div>      
