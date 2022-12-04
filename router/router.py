@@ -183,11 +183,12 @@ def editar_grupo(id):
 def deletar_grupo(id):
     if 'loggedin' in session:
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT * FROM TB_GRUPO_USUARIO WHERE ID_GRUPO = %s', (id, ))
+            cursor.execute('SELECT * FROM TB_RELATORIO WHERE ID_GRUPO = %s', (id, ))
             grupo = cursor.fetchone()
             if grupo:
-                flash('Não é possível excluir um grupo que possui um ou mais usuários!')
+                flash('Não é possível excluir um grupo que possui um ou mais relatórios!')
             else:
+                cursor.execute('DELETE FROM TB_GRUPO_USUARIO WHERE ID_GRUPO = %s', (id, ),)
                 cursor.execute('DELETE FROM TB_GRUPO WHERE ID_GRUPO = %s', (id, ))
                 mysql.connection.commit()
                 flash('Grupo excluído com sucesso!')
@@ -313,13 +314,14 @@ def editar_usuario(id_usuario):
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('SELECT * FROM TB_USUARIO WHERE ID_USUARIO = %s', (id_usuario,))
             account = cursor.fetchone()
-            if request.method == 'POST' and 'nome' in request.form and 'login' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form:
+            if request.method == 'POST' and 'nome' in request.form and 'login' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form and 'FL_ADMINISTRADOR' in request.form:
                 nome = request.form['nome']
                 login = request.form['login']
                 telefone = request.form['telefone']
                 email = request.form['email']
                 senha = request.form['senha']
                 confirmar_senha = request.form['confirmar_senha']
+                FL_ADMINISTRADOR = request.form.getlist('FL_ADMINISTRADOR')
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_EMAIL = %s', (email,))
                 account = cursor.fetchone()
@@ -328,7 +330,7 @@ def editar_usuario(id_usuario):
                 elif senha != confirmar_senha:
                     msg = 'As senhas não conferem!'
                 else:
-                    cursor.execute('UPDATE TB_USUARIO SET NOME_USUARIO = %s, DS_TELEFONE = %s, DS_EMAIL = %s, DS_LOGIN = %s, DS_SENHA = %s WHERE ID_USUARIO = %s', (nome, telefone, email, login, senha, id_usuario,))
+                    cursor.execute('UPDATE TB_USUARIO SET NOME_USUARIO = %s, DS_TELEFONE = %s, DS_EMAIL = %s, DS_LOGIN = %s, DS_SENHA = %s, FL_ADMINISTRADOR = %s WHERE ID_USUARIO = %s', (nome, telefone, email, login, senha, id_usuario, FL_ADMINISTRADOR, ))
                     mysql.connection.commit()
                     msg = 'Conta atualizada com sucesso!'
                     return redirect(url_for('list_user'))            
@@ -339,7 +341,6 @@ def editar_usuario(id_usuario):
 @app.route('/powerhub/grupos')
 def Grupos():
     if 'loggedin' in session:
-        
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT DISTINCT GP.NOME_DO_GRUPO, GP.ID_GRUPO FROM TB_GRUPO_USUARIO GPU JOIN TB_GRUPO GP ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_ORGANIZACAO = (%s)', (session['ID_ORGANIZACAO'],))
         grupos = cursor.fetchall()
@@ -352,23 +353,47 @@ def vincular_usuario(id_grupo):
     if 'loggedin' in session:
             if request.method == 'GET':
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute('SELECT * FROM TB_USUARIO US JOIN TB_GRUPO_USUARIO GPU ON US.ID_USUARIO = GPU.ID_USUARIO WHERE GPU.ID_GRUPO = (%s)', (id_grupo,))
+                cursor.execute('SELECT DISTINCT * FROM TB_USUARIO US JOIN TB_GRUPO_USUARIO GPU ON US.ID_USUARIO = GPU.ID_USUARIO JOIN TB_GRUPO GP ON GP.ID_GRUPO = GPU.ID_GRUPO  WHERE GPU.ID_GRUPO = (%s)', (id_grupo,))
                 usuarios = cursor.fetchall()
                 cursor.close()
                 
                 # TODOS OS USUARIOS
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute('SELECT distinct GPU.ID_GRUPO, us.* FROM TB_USUARIO US JOIN TB_GRUPO_USUARIO GPU ON US.ID_USUARIO <> GPU.ID_USUARIO JOIN TB_GRUPO GP ON GPU.ID_GRUPO <> GP.ID_GRUPO WHERE  US.ID_ORGANIZACAO = (%s) AND GPU.ID_GRUPO = (%s)', (session['ID_ORGANIZACAO'], id_grupo,))
+                cursor.execute('SELECT * FROM TB_USUARIO WHERE ID_USUARIO  NOT IN (SELECT ID_USUARIO FROM TB_GRUPO_USUARIO WHERE ID_GRUPO = (%s) ) AND ID_ORGANIZACAO = (%s)', (id_grupo, session['ID_ORGANIZACAO'],))
                 usuarios_nao_vinculados = cursor.fetchall()
-                cursor.close()                
+                cursor.close()
+            
+            return render_template('v_vincular_usr_grupo.html', usuarios=usuarios, usuarios_nao_vinculados=usuarios_nao_vinculados)
 
-            if request.method == 'POST' and 'id_usuario' in request.form:
-                id_usuario = request.form['id_usuario']
+# vincular usuario ao grupo
+@app.route('/powerhub/vincular_usuarios/<int:id_grupo>/<int:id_usuario>', methods=['POST'])
+def vincular_usuarios(id_grupo, id_usuario):
+    if 'loggedin' in session:
+            if request.method == 'POST':
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute('INSERT INTO TB_GRUPO_USUARIO VALUES(%s, %s, %s)', (0, id_grupo, id_usuario, session['ID_ORGANIZACAO'],))
+                cursor.execute('INSERT INTO TB_GRUPO_USUARIO VALUES(%s, %s, %s, %s)', (0, id_grupo, id_usuario, session['ID_ORGANIZACAO'],))
                 mysql.connection.commit()
                 cursor.close()
-                return redirect(url_for('Grupos'))
-            
-            return render_template('v_vincular_grupo.html', usuarios=usuarios, usuarios_nao_vinculados=usuarios_nao_vinculados)
+                flash('Usuário vinculado com sucesso!', 'success')
+                return redirect(url_for('vincular_usuario', id_grupo=id_grupo))
 
+
+# DESVINCULAR USUARIO DO GRUPO
+@app.route('/powerhub/desvincular_usuario/<int:id_grupo>/<int:id_usuario>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def desvincular_usuario(id_grupo, id_usuario):
+    if 'loggedin' in session:
+                
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('SELECT COUNT(*) AS CTG_USUARIOS FROM TB_USUARIO US JOIN TB_GRUPO_USUARIO GPU ON US.ID_USUARIO = GPU.ID_USUARIO JOIN TB_GRUPO GP ON GP.ID_GRUPO = GPU.ID_GRUPO  WHERE GPU.ID_GRUPO = (%s)', (id_grupo,))
+                usuarios = cursor.fetchone()
+                cursor.close()
+
+                if usuarios['CTG_USUARIOS'] > 1:
+                    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                    cursor.execute('DELETE FROM TB_GRUPO_USUARIO WHERE ID_GRUPO = (%s) AND ID_USUARIO = (%s)', (id_grupo, id_usuario,))
+                    mysql.connection.commit()
+                    cursor.close()
+                else:
+                    flash('Não é possível desvincular o último usuário do grupo!', 'danger')
+            
+                return redirect(url_for('vincular_usuario', id_grupo=id_grupo))
