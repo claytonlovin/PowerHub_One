@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block title %}Configurações{% endblock %}
+
+{% block content %}
+
+		
+
+
+
+
+<div class="card o-hidden border-0 shadow-lg  p-0">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert text-center alert-{{ category }}"> {{ message }} </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    <div class="card-header">
+        <h5>{{ session['NOME_ORGANIZACAO'] }}</h5>
+    </div>
+  <div class="card-body ">
+    <form class="user" action="{{ url_for('criar_usuario')}}" method="post" autocomplete="off">
+      <!--ORGANIZAÇÃO -->
+      <div class="form-group row">
+		{% for org in organizacao %}
+          <div class="col-sm-6 mb-3 mb-sm-0">
+              <input type="text" class="form-control form-control-user" id="nome"
+              name="nome" value="{{ org['NOME_ORGANIZACAO'] }}" disabled>
+          </div>
+		  
+		  <div class="col-sm-6 mb-3 mb-sm-0">
+			<input type="date" class="form-control form-control-user" id="nome"
+			name="nome" value="{{ org['DATA_CRIACAO'] }}" disabled>
+		</div>
+		</div>
+	<div class="form-group row">
+		<div class="col-sm-6 mb-3 mb-sm-0">
+			<input type="email" class="form-control form-control-user" id="nome"
+			name="nome" value="{{ org['DS_EMAIL'] }}" disabled>
+		</div>
+		<div class="col-sm-6 mb-3 mb-sm-0">
+			<input type="text" class="form-control form-control-user" id="nome"
+			name="nome" value="{{ org['DS_TELEFONE'] }}" disabled>
+		</div>
+    {% endfor %}
+      </div>
+
+  <button class="btn btn-dark small btn-user btn-block " type="submit" type="submit" disabled>Editar</button>
+      
+  </form>
+  </div>
+</div>
+<style>
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+code{
+    text-align: center;
+}
+</style>
+{% endblock %}

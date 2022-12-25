@@ -7,7 +7,17 @@
 		
 
 
-
+<div class="row">
+    <div class="col-xl-12 col-md-6 mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}"> {{ message }} </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
 
 <div class="card o-hidden border-0 shadow-lg  p-0">
     <div class="card-header">
@@ -30,7 +40,7 @@
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="text" class="form-control form-control-user" id="telefone"
-              name="telefone" placeholder="(01) 0000-0000" value="{{account['DS_TELEFONE']}}">
+              name="telefone" placeholder="(01) 0000-0000" maxlength="11" value="{{account['DS_TELEFONE']}}">
           </div>
           <div class="col-sm-6">
               <input type="email" class="form-control form-control-user" id="email"
@@ -40,7 +50,7 @@
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="password" class="form-control form-control-user"
-                  id="senha"  name="senha" placeholder="senha..." value="{{ account['DS_SENHA'] }}">
+                  id="senha"  name="senha" maxlength="8" placeholder="senha..." value="{{ account['DS_SENHA'] }}">
           </div>
           <div class="col-sm-6">
               <input type="password" name="confirmar_senha" class="form-control form-control-user"

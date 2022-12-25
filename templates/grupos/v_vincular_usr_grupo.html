@@ -3,12 +3,19 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-
+<div class="row">
+  <div class="col-xl-12 col-md-6 mb-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}"> {{ message }} </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>
 <div id="accordion">
   <div class="card">
-    {% for message in get_flashed_messages() %}
-      <p class="aler alert-danger block text-center">{{ message }}</p>
-      {% endfor %}
     <div class="card-header" id="headingOne">
       <div class="d-flex flex-row align-items-center justify-content-between ">
       <h5 class="mb-0">

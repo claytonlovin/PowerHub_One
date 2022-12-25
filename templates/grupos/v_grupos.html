@@ -27,14 +27,14 @@
                 <div class="card-body">
                   <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                      <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
                         <p class="">{{ grupos_usuario['NOME_DO_GRUPO']}}</p>
                         
                       </div>
                       <!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
                     </div>
                     <div class="col-auto"> 
-                        <a href="{{ url_for('vincular_usuario', id_grupo=grupos_usuario['ID_GRUPO']) }}" type="submit" id="id_grupo"><i class="fas fa-user fa-2x text-primary-300"></i></a>
+                        <a href="{{ url_for('vincular_usuario', id_grupo=grupos_usuario['ID_GRUPO']) }}" type="submit" id="id_grupo" data-toggle="tooltip" title="vincular Usuários"><i class="fas fa-exchange fa-2x text-gray-300"></i></a>
                     </div>
                   </div>
                 </div>
@@ -56,3 +56,8 @@
 	text-transform: uppercase ;
 }
 </style>
+<script>
+	$(document).ready(function(){
+	  $('[data-toggle="tooltip"]').tooltip();   
+	});
+</script>

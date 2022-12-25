@@ -2,12 +2,16 @@
 
 {% block title %}Home{% endblock %}
 
-{% block content %}
+{% block content %} 
 				<div class="row">
 					<div class="col-xl-12 col-md-6 mb-4">
-						{% for message in get_flashed_messages() %}
-						<p class="aler alert-danger block text-center">{{ message }}</p>
-						{% endfor %}
+						{% with messages = get_flashed_messages(with_categories=true) %}
+							{% if messages %}
+								{% for category, message in messages %}
+								<div class="alert text-center alert-{{ category }}"> {{ message }} </div>
+								{% endfor %}
+							{% endif %}
+						{% endwith %}
 						<div class="row align-items-center">
 							<div class="col">
 								<h2>Meus grupos</h2>
@@ -15,9 +19,17 @@
 							
 							<div class="col d-flex flex-row-reverse bd-highlight">
 								{% if session['FL_ADMINISTRADOR'] == True %}
-									<a href="#" type="submit" class="btn btn-warning" data-toggle="modal" data-target="#myModal-1"> Criar Grupos</a>
-								{% else %}
-									{{ super() }}
+									{% if session['PREMIUM'] == 0 %}
+										{% if list_grupos_usuario|length >= 2 %}
+											<a href="#" type="submit" class="btn btn-success" data-toggle="modal" data-target="#Modal-premium"> Criar Grupos</a>
+										{% else%}
+											<a href="#" type="submit" class="btn btn-warning" data-toggle="modal" data-target="#myModal-1"> Criar Grupos</a>
+										{% endif%}
+									{% else %}
+										<a href="#" type="submit" class="btn btn-warning" data-toggle="modal" data-target="#myModal-1"> Criar Grupos</a>
+									{% endif %}
+									{% else %}
+										{{ super() }}
 								{% endif %}
 							</div>
 						</div>
@@ -25,35 +37,40 @@
 				</div>
 		<div class="context-card">
 			{% for grupos_usuario in list_grupos_usuario: %} 
-				<div class="row">
-					<!-- Earnings (Monthly) Card Example -->
-					<div class="col-xl-12 col-md-12 mb-4">
-						<div class="card border-left-success shadow h-100 py-2" id="grupo-list">
-							<div class="card-body">
-								<div class="row no-gutters align-items-center">
-									<div class="col mr-2">
-										<div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
-											<p class="">{{ grupos_usuario['NOME_DO_GRUPO']}}</p>
+				{% if grupos_usuario %}
+					<div class="row">
+						<!-- Earnings (Monthly) Card Example -->
+						<div class="col-xl-12 col-md-12 mb-4">
+							<div class="card border-left-success shadow h-100 py-2" id="grupo-list">
+								<div class="card-body">
+									<div class="row no-gutters align-items-center">
+										<div class="col mr-2">
+											<div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+												<p class="">{{ grupos_usuario['NOME_DO_GRUPO']}}</p>
+											</div>
+											<!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
 										</div>
-										<!--<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>-->
-									</div>
-									<div class="col-auto">
-										<a href="{{ url_for('listar_relatorios', id_grupo=grupos_usuario['ID_GRUPO']) }}"><i class="fas fa-eye fa-2x text-gray-300"></i></a>
-										
-										{% if session['FL_ADMINISTRADOR'] == True %}
-											<a href="{{ url_for('editar_grupo', id=grupos_usuario['ID_GRUPO']) }}" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a>
-										{% else %}
-											{{ super() }}
-										{% endif %}
+										<div class="col-auto">
+											<a href="{{ url_for('listar_relatorios', id_grupo=grupos_usuario['ID_GRUPO']) }}"><i class="fas fa-eye fa-2x text-gray-300"></i></a>
+											
+											{% if session['FL_ADMINISTRADOR'] == True %}
+												<a href="{{ url_for('editar_grupo', id=grupos_usuario['ID_GRUPO']) }}" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a>
+											{% else %}
+												
+												{{ super() }}
+											{% endif %}
 
-										
-										
+											
+											
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-		</div>
+			</div>
+			{% else %}
+				<h1 class="align-items-center py-5">Nenhum grupo</h1>
+			{% endif %}
 		{% endfor %}
 
 		<!-- -->		
@@ -81,6 +98,34 @@
 			  </div>
 			</div>
 		  </div>  
+
+	<!-- MODAL PREMIUM-->
+		  <div class="modal fade" id="Modal-premium">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+				<div class="p-3" >
+				  <h4 class="modal-title text-center">Recursos do premium</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">Grupos Inlimitados</li>
+							<li class="list-group-item">Notoificação por e-mail</li>
+							<li class="list-group-item">30 Usuários por organizacao</li>
+							<li class="list-group-item">Suporte</li>
+						  </ul>
+					</div>
+				</div>
+				<div class="modal-footer d-flex justify-content-betwen flex-row ">
+				    <a href="{{ url_for('pagamento') }}" class="btn btn-danger btn-lg btn-block">
+				  		 Tone-se premium
+					</a>
+				</div>
+			
+				
+			  </div>
+			</div>
+		  </div>  
 {% endblock %}
 
 <style type="text/css">
@@ -90,4 +135,5 @@
 	font-weight: 300;
 	text-transform: uppercase ;
 }
+
 </style>

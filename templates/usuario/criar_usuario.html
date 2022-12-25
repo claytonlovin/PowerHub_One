@@ -10,6 +10,13 @@
 
 
 <div class="card o-hidden border-0 shadow-lg  p-0">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert text-center alert-{{ category }}"> {{ message }} </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
     <div class="card-header">
         <h2>Criar novo usuario</h2>
     </div>
@@ -30,7 +37,7 @@
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="text" class="form-control form-control-user" id="telefone"
-              name="telefone" placeholder="(01) 0000-0000">
+              name="telefone" maxlength="11" placeholder="(01) 0000-0000">
           </div>
           <div class="col-sm-6">
               <input type="email" class="form-control form-control-user" id="email"
@@ -40,14 +47,14 @@
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="password" class="form-control form-control-user"
-                  id="senha"  name="senha" placeholder="senha...">
+                  id="senha" maxlength="8" name="senha" placeholder="senha...">
           </div>
           <div class="col-sm-6">
               <input type="password" name="confirmar_senha" class="form-control form-control-user"
-                  id="confirmar_senha" placeholder="Confirmar senha  ...">
+                  id="confirmar_senha" maxlength="8" placeholder="Confirmar senha  ...">
           </div>
       </div>
-  <button class="btn btn-primary small btn-user btn-block " type="submit" type="submit">Criar Usuário</button>
+  <button class="btn btn-dark small btn-user btn-block " type="submit" type="submit">Criar Usuário</button>
       <code class="aling-center">{{msg}}</code>
   </form>
   </div>

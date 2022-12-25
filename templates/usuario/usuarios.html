@@ -6,14 +6,21 @@
 
 		<div class="row">
 			<div class="col-xl-12 col-md-6 mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+							{% if messages %}
+								{% for category, message in messages %}
+								<div class="alert text-center alert-{{ category }}"> {{ message }} </div>
+								{% endfor %}
+							{% endif %}
+						{% endwith %}
 				<div class="row align-items-center">
 					<div class="col">
-						<h2>Usuarios</h2>
+						<h2>Usuários</h2>
 					</div>
 					
 					<div class="col d-flex flex-row-reverse bd-highlight">
 						{% if session['FL_ADMINISTRADOR'] == True %}
-              <a href="{{ url_for('criar_usuario') }}" class="btn btn-primary">Criar Usuário</a>
+              <a href="{{ url_for('criar_usuario') }}" class="btn btn-dark">Criar Usuário</a>
 							
 						{% else %}
 							{{ super() }}
@@ -34,7 +41,7 @@
             <th scope="col">Login</th>
             <th scope="col">Telefone</th>
             <th scope="col">Email</th>
-            <th scope="col">Permissão</th>
+            <th scope="col">Acesso</th>
            {% if session['FL_ADMINISTRADOR'] == True %}
             <th scope="col">Ações</th>
            {% endif %}
@@ -59,8 +66,8 @@
               {% if session['FL_ADMINISTRADOR'] == True %}
               <td>
                 <div class="">
-                  <a href="{{ url_for('editar_usuario', id_usuario=contas['ID_USUARIO'])}}" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a>
-                  <a href="#" type="submit" id="id_grupo"><i class="fas fa-trash fa-2x text-gray-300"></i></a>
+                  <a href="{{ url_for('editar_usuario', id_usuario=contas['ID_USUARIO']) }}" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a>
+                  <a href="{{ url_for('excluir_usuario', id_usuario=contas['ID_USUARIO']) }}" type="submit" id="id_grupo"><i class="fas fa-trash fa-2x text-gray-300"></i></a>
                 </div>
               </td>
               {% else %}

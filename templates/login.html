@@ -21,20 +21,29 @@
     <link href="{{ url_for('static', filename='css/sb-admin-2.min.css' )}}" rel="stylesheet">
 
 </head>
-
-<body class="">
+<style>
+    body{
+       
+        height: 100vh;
+    }
+</style>
+<body class="bg-dark">
 
     <div class="container">
 
         <!-- Outer Row -->
         <div class="row justify-content-center">
 
-            <div class="col-xl-5 col-lg-12 col-md-9">
+            <div class="col-xl-4 col-lg-12 col-md-9">
                 
                 <div class="card o-hidden border-0 shadow-lg my-5">
-                        {% for message in get_flashed_messages() %}
-                            <p class="aler alert-danger block text-center">{{ message }}</p>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert text-center alert-{{ category }}"> {{ message }} </div>
                         {% endfor %}
+                    {% endif %}
+                {% endwith %}
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
 
@@ -61,15 +70,15 @@
                                                     Me</label>-->
                                             </div>
                                         </div>
-                                        <button class="btn btn-dark small btn-user btn-block " type="submit">Entrar</button>
+                                        <button class="btn btn-dark btn-block " type="submit">Entrar</button>
                                         
                                         <hr>
-                                        <a href="{{ url_for('register') }}" class="btn btn-success btn-user btn-block">
+                                        <a href="{{ url_for('register') }}" class="btn btn-success btn-block">
                                             <i class="fab fa-user fa-fw"></i> Criar Conta
                                         </a>
                                       
                                     </form>
-                                    <hr>
+                                
                                 </div>
                             </div>
                         </div>
