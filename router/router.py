@@ -4,6 +4,9 @@ import MySQLdb.cursors
 from datetime import datetime
 now = datetime.now()
 import re
+from powerbiclient import Report, models
+from powerbiclient.authentication import DeviceCodeLoginAuthentication
+import sys
 
 # LANDPAGE
 @app.route('/', methods=['GET', 'POST'])
@@ -442,3 +445,4 @@ def pagamento():
         # carregar dados da organizacao
         
         return render_template('premium/v_checkout.html')
+
