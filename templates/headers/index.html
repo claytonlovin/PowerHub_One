@@ -131,23 +131,24 @@
 </svg>
 
 
-<nav class="bg-dark">
+<nav class="bg-white">
   <div class="container">
     <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3">
       <a href="/" class="d-flex align-items-center col-md-3 mb-md-0 text-white text-decoration-none">
-        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+        <!-- <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg> -->
+        <img src="{{ url_for('static', filename='img/icon.png' )}}" alt="">
       </a>
 
       <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2 link-secondary">Início</a></li>
-        <li><a href="#" class="nav-link px-2 link-light">Funções</a></li>
-        <li><a href="#" class="nav-link px-2 link-light">Preços</a></li>
-        <li><a href="#" class="nav-link px-2 link-light">FAQs</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">Início</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">Funções</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">Preços</a></li>
+        <li><a href="#" class="nav-link px-2 link-dark">FAQs</a></li>
       </ul>
 
-      <div class="col-md-3 text-end">
-        <a href="{{url_for('login')}}"  type="button" class="btn btn-outline-light me-2">Login</a>
-        <a href="{{url_for('register')}}" type="button" class="btn btn-success">Criar conta Grátis</a>
+      <div class="col-md-3 d-flex text-end">
+        <a href="{{url_for('login')}}"  type="button" class="btn btn-outline-dark me-2">Login</a>
+        <a href="{{url_for('register')}}" type="button" class="btn btn-primary">Criar conta Grátis</a>
       </div>
     </header>
   </div>
@@ -160,7 +161,7 @@
     <div class=" mb-4  rounded-3">
       <div class="container-fluid py-5">
         <h1 class="display-5   fw-bold">Compartilhar relatório</h1>
-        <p class="col-md-8  fs-4">O Portal do PowerBI hospeda um número ilimitado de relatórios e painéis incorporados do Power BI e permite que você os compartilhe com qualquer pessoa.</p>
+        <p class="col-md-8  fs-4">Não perca mais tempo procurando relatórios dispersos e experimente nossa plataforma agora! Cadastre-se gratuitamente e experimente nossos recursos de primeira mão. </p>
         <button class="btn btn-dark btn-lg" type="button">Criar conta gratuita</button>
       </div>
     </div>
@@ -176,7 +177,7 @@
       <div class="h-100 p-5 text-white bg-dark rounded-3">
         <h2>Gestão de relatório</h2>
         <p>Compartilhe reltórios das princiais refrramentas de self-service bi, com qualquer pessoas mesmo que ela não faa parte da sua organização.</p>
-        <button class="btn btn-success" type="button">Compartilhar relatórios</button>
+        <button class="btn btn-primary" type="button">Compartilhar relatórios</button>
       </div>
     </div>
   </div>
@@ -188,21 +189,21 @@
 
     <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
       <div class="feature col">
-        <div class="feature-icon bg-success bg-gradient">
+        <div class="feature-icon bg-dark bg-gradient">
           <svg class="bi" width="1em" height="1em"><use xlink:href="#collection"/></svg>
         </div>
         <h2>Links seguros</h2>
         <p>Sem links espalhados pela internet deixando dados da sensíveis expostos.</p>
       </div>
       <div class="feature col">
-        <div class="feature-icon bg-success bg-gradient">
+        <div class="feature-icon bg-dark bg-gradient">
           <svg class="bi" width="1em" height="1em"><use xlink:href="#people-circle"/></svg>
         </div>
         <h2>Multiusuários</h2>
         <p>Conceda permissões para diversos setores, dentro e fora de sua empresa.</p>
       </div>
       <div class="feature col">
-        <div class="feature-icon bg-success bg-gradient">
+        <div class="feature-icon bg-dark bg-gradient">
           <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"/></svg>
         </div>
         <h2>Embeded relatório</h2>
@@ -233,10 +234,11 @@
             <li class="text-decoration-line-through">Notificação</li>
             <li class="text-decoration-line-through">Suporte</li>
           </ul>
-          <button type="button" class="w-100 btn btn-lg btn-outline-dark">Criar conta</button>
+          <a href="/register"  type="button" class="w-100 btn btn-lg btn-outline-dark">Criar Conta</a>
         </div>
       </div>
     </div>
+    <!--
     <div class="col">
       <div class="card mb-4 rounded-3 shadow-sm border-dark">
         <div class="card-header py-3 text-white bg-dark border-dark">
@@ -253,17 +255,16 @@
           <button type="button" class="w-100 btn btn-lg btn-danger">Experimente Grátis</button>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 
 
-<div class="container-fluid bg-dark" style="height: 40vh">
+<div class="container-fluid bg-dark" style="height: 30vh">
  <div class="container">
   <footer class="pt-4 my-md-5 pt-md-5 ">
     <div class="row">
       <div class="col-12 col-md">
-        <h5>Resources</h5>
         <div class="list-unstyled text-small text-center d-flex flex-row justify-content-center icons">
           <a href="">
             <i class="fa-brands fa-linkedin"></i>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
 
@@ -18,25 +18,21 @@
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css' )}}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/sb-admin-2.css' )}}" rel="stylesheet">
 
 </head>
-<style>
-    body{
-       
-        height: 100vh;
-    }
-</style>
-<body class="bg-dark">
 
-    <div class="container">
+<body>
+
+<div class="background">
+    <div class="mascara"> 
 
         <!-- Outer Row -->
-        <div class="row justify-content-center">
+        <div class="alinhamento">
 
-            <div class="col-xl-4 col-lg-12 col-md-9">
+            <div class="col-xl-3 col-lg-12 col-md-9">
                 
-                <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card" style="height: 100vh;">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -44,20 +40,19 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                    <div class="card-body p-0">
+                    <div class="card-body p-0" style="height: 100vh;display: flex;justify-content: center;align-items: center;">
                         <!-- Nested Row within Card Body -->
 
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="p-5">
+                        
+                                <div class="p-5" style="width: 100%;">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Bem-vindo(a)</h1>
                                     </div>
                                     <form class="user" action="{{ url_for('login') }}" method="post">
                                         <div class="form-group">
-                                            <input type="text" name="username" name="password" id="username" class="form-control form-control-user"
+                                            <input type="text" name="email" name="password" id="email" class="form-control form-control-user"
                                                 id="exampleInputEmail" aria-describedby="emailHelp"
-                                                placeholder="Usuario...">
+                                                placeholder="Usuario@usuario.com">
                                         </div>
                                         <div class="form-group">
                                             <input type="password" name="password" name="password" id="password" class="form-control form-control-user"
@@ -70,17 +65,16 @@
                                                     Me</label>-->
                                             </div>
                                         </div>
-                                        <button class="btn btn-dark btn-block " type="submit">Entrar</button>
+                                        <button class="btn btn-primary rounded-pill btn-lg btn-block " type="submit">Entrar</button>
                                         
                                         <hr>
-                                        <a href="{{ url_for('register') }}" class="btn btn-success btn-block">
+                                        <a href="{{ url_for('register') }}" class="btn rounded-pill btn-success btn-lg btn-block">
                                             <i class="fab fa-user fa-fw"></i> Criar Conta
                                         </a>
                                       
                                     </form>
                                 
-                                </div>
-                            </div>
+                             
                         </div>
                     </div>
                 </div>
@@ -90,7 +84,7 @@
         </div>
 
     </div>
-
+</div>
     <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 

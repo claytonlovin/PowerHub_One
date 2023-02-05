@@ -17,7 +17,7 @@
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css' )}}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/sb-admin-2.css' )}}" rel="stylesheet">
 
 </head>
 
@@ -31,10 +31,10 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('home')}}">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                <div class="sidebar-brand-icon p-3 ">
+                    <img src="{{url_for('static', filename='img/database.png')}}" alt="...">
                 </div>
-                <div class="sidebar-brand-text mx-3">{{ session['NOME_ORGANIZACAO'] }}</div>
+                <!--div class="sidebar-brand-text mx-3">{{ session['NOME_ORGANIZACAO'] }}</div> -->
             </a>
 
             <!-- Divider -->

@@ -3,9 +3,8 @@ from setting.config import *
 import MySQLdb.cursors
 from datetime import datetime
 now = datetime.now()
+import hashlib
 import re
-from powerbiclient import Report, models
-from powerbiclient.authentication import DeviceCodeLoginAuthentication
 import sys
 
 # LANDPAGE
@@ -16,39 +15,36 @@ def site():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
-    # Verifique se existem solicitações POST "username" e "password" (formulário enviado pelo usuário)
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.form['username']
+    if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+        email = request.form['email']
         password = request.form['password']
-        # Verifique se as contas existem usando MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.callproc('sp_autenticaUsuario', (username, password))
+        cursor.callproc('sp_autenticaUsuario', (email,))
         tb_usuario = cursor.fetchone()
        
         if tb_usuario:
-           # CRIANDO DADOS DE SESSÃO
-            session['loggedin'] = True
-            session['NOME_USUARIO']  = tb_usuario['NOME_USUARIO']
-            session['ID_USUARIO']   = tb_usuario['ID_USUARIO']
-            #session['ID_GRUPO']  = tb_usuario['ID_GRUPO']
-            session['FL_PROPRIETARIO_CONTA'] = tb_usuario['FL_PROPRIETARIO_CONTA']
-            session['DS_SENHA'] = tb_usuario['DS_SENHA']
-            session['ID_ORGANIZACAO'] = tb_usuario['ID_ORGANIZACAO']
-            session['NOME_ORGANIZACAO'] = tb_usuario['NOME_ORGANIZACAO']
-            session['FL_ADMINISTRADOR'] = tb_usuario['FL_ADMINISTRADOR']
-            session['PREMIUM'] = tb_usuario['PREMIUM']
-            # REDIRECIONAR
-            return redirect(url_for('home'))
-        
-        elif username == '' and password == '':
-            flash('Por favor, preencha todos os campos', 'info')
-        
+            # Criptografia da senha digitada pelo usuário
+            password_criptografada = hashlib.sha256(password.encode()).hexdigest()
+            # Verifica se a senha criptografada é igual a senha armazenada no banco de dados
+            if password_criptografada == tb_usuario['DS_SENHA']:
+                # CRIANDO DADOS DE SESSÃO
+                session['loggedin'] = True
+                session['NOME_USUARIO']  = tb_usuario['NOME_USUARIO']
+                session['ID_USUARIO']   = tb_usuario['ID_USUARIO']
+                session['FL_PROPRIETARIO_CONTA'] = tb_usuario['FL_PROPRIETARIO_CONTA']
+                session['DS_SENHA'] = tb_usuario['DS_SENHA']
+                session['ID_ORGANIZACAO'] = tb_usuario['ID_ORGANIZACAO']
+                session['NOME_ORGANIZACAO'] = tb_usuario['NOME_ORGANIZACAO']
+                session['FL_ADMINISTRADOR'] = tb_usuario['FL_ADMINISTRADOR']
+                session['PREMIUM'] = tb_usuario['PREMIUM']
+                # REDIRECIONAR
+                return redirect(url_for('home'))
+            else:
+                flash('Senha incorreta!', 'danger')
         else:
-            # VERIFICA SE O LOGIN ESTÁ CORRETO
-            flash('Usuário e senha incorretos!', 'danger')
+            flash('Usuário não encontrado!', 'danger')
         
     return render_template('login.html', msg=msg)
-
 # LOGOUT
 @app.route('/powerhub/logout')
 def logout():
@@ -68,8 +64,11 @@ def register():
             DS_USUARIO = request.form['username']
             DS_NOME = request.form['name']
             DS_SENHA = request.form['password']
-            
 
+            # Criptografar a senha
+            senha_criptografada = hashlib.sha256(DS_SENHA.encode()).hexdigest()
+                        
+            data = now.strftime('%Y-%m-%d %H:%M:%S')
             # VERIFICA SE O USUARIO EXISTE NO BANCO
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_LOGIN = %s OR DS_SENHA = %s', (DS_USUARIO, DS_SENHA), ) # VERIFICA SE O USUARIO EXISTE NO BANCO
@@ -93,9 +92,9 @@ def register():
             
             else:
                 cursor.callproc('sp_create_organizacao_and_user', (
-                    0, DS_ORGANIZACAO, 0, 1,0,
-                    0, 'PW Grupo', 0, 1, 0,
-                    0, DS_NOME, DS_NUMERO_TEL, DS_EMAIL, DS_USUARIO, DS_SENHA, 1, 0, 1,
+                    0, DS_ORGANIZACAO, data, 1,0,
+                    0, 'PW Grupo', data, 1, 0,
+                    0, DS_NOME, DS_NUMERO_TEL, DS_EMAIL, DS_USUARIO, senha_criptografada, 1, 0, 1,
                     0, 0, 0, 0))
                 mysql.connection.commit()
                 flash('Organizacao criada com sucesso', 'success')
@@ -203,10 +202,10 @@ def listar_relatorios(id_grupo):
     if 'loggedin' in session:
         if request.method == 'GET':
             try:
-                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                """""cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT GPU.ID_GRUPO, GP.NOME_DO_GRUPO FROM TB_GRUPO_USUARIO GPU JOIN TB_GRUPO GP ON GPU.ID_GRUPO = GP.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))
                 id_grupo_g = cursor.fetchall()
-                cursor.close()
+                cursor.close()"""""
 
                 queryRelatorio = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 queryRelatorio.execute('SELECT DISTINCT RL.ID_RELATORIO, RL.ID_GRUPO,  RL.DS_NOME_RELATORIO FROM TB_RELATORIO RL JOIN TB_GRUPO_USUARIO GPU ON GPU.ID_GRUPO = RL.ID_GRUPO WHERE GPU.ID_GRUPO = %s', (id_grupo,))

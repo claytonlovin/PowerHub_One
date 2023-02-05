@@ -1,6 +1,6 @@
 
-from tkinter import Entry
-from traceback import print_tb
+#from tkinter import Entry
+#from traceback import print_tb
 from setting.config import *
 from router.router import *
 
