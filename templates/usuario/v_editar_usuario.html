@@ -27,14 +27,11 @@
     <form class="user" action="" method="post" autocomplete="off">
       <!--ORGANIZAÇÃO -->
       <div class="form-group row">
-          <div class="col-sm-6 mb-3 mb-sm-0">
+          <div class="col-sm-12 mb-3 mb-sm-0">
               <input type="text" class="form-control form-control-user" id="nome"
               name="nome" placeholder="Nome Completo" value="{{account['NOME_USUARIO']}}">
           </div>
-          <div class="col-sm-6">
-              <input type="text" class="form-control form-control-user" id="login"
-              name="login" placeholder="login" value="{{account['DS_LOGIN']}}">
-          </div>
+        
       </div>
       <!-- DADOS -->
       <div class="form-group row">
@@ -50,11 +47,11 @@
       <div class="form-group row">
           <div class="col-sm-6 mb-3 mb-sm-0">
               <input type="password" class="form-control form-control-user"
-                  id="senha"  name="senha" maxlength="8" placeholder="senha..." value="{{ account['DS_SENHA'] }}">
+                  id="senha"  name="senha" maxlength="8" placeholder="senha..." value="">
           </div>
           <div class="col-sm-6">
               <input type="password" name="confirmar_senha" class="form-control form-control-user"
-                  id="confirmar_senha" placeholder="Confirmar senha  ..." value="{{ account['DS_SENHA'] }}">
+                  id="confirmar_senha" placeholder="Confirmar senha  ..." value="">
           </div>
       </div>
       <div class="custom-control custom-switch mb-3">

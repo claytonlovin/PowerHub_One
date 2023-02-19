@@ -57,13 +57,13 @@ def logout():
 # ROTA DE REGISTRO
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-        if request.method == 'POST' and 'organizacao' in request.form and 'email' in request.form and 'telefone' in request.form and 'name' in request.form and 'username' in request.form and 'password' in request.form:
+        if request.method == 'POST' and 'organizacao' in request.form and 'cnpj' in request.form and 'email' in request.form and 'telefone' in request.form and 'name' in request.form and 'password' in request.form:
             DS_ORGANIZACAO = request.form['organizacao']
             DS_EMAIL = request.form['email']
             DS_NUMERO_TEL = request.form['telefone']
-            DS_USUARIO = request.form['username']
             DS_NOME = request.form['name']
             DS_SENHA = request.form['password']
+            DS_CNPJ = request.form['cnpj']
 
             # Criptografar a senha
             senha_criptografada = hashlib.sha256(DS_SENHA.encode()).hexdigest()
@@ -71,14 +71,23 @@ def register():
             data = now.strftime('%Y-%m-%d %H:%M:%S')
             # VERIFICA SE O USUARIO EXISTE NO BANCO
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_LOGIN = %s OR DS_SENHA = %s', (DS_USUARIO, DS_SENHA), ) # VERIFICA SE O USUARIO EXISTE NO BANCO
+            cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_LOGIN = %s', (DS_EMAIL, )) # VERIFICA SE O USUARIO EXISTE NO BANCO
             account = cursor.fetchone()
 
             # VERIFICA SE O USUARIO EXISTE NO BANCO
             if account:
-                flash('Alguém está utilizando esse mesmo login ou senha!')
+                flash('Alguém está utilizando esse mesmo login ou senha!', 'danger')
+            
+
+             # VERIFICA SE O USUARIO EXISTE NO BANCO
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_ORGANIZACAO WHERE DS_CNPJ = %s', (DS_CNPJ, )) # VERIFICA SE O USUARIO EXISTE NO BANCO
+            account = cursor.fetchone()
+            if account:
+                flash('CNPJ Já cadastrado!', 'danger')
+
             # VERIFICA SE O CAMPO ESTÁ VAZIO
-            if not DS_ORGANIZACAO or not DS_NOME or not DS_EMAIL or not DS_NUMERO_TEL or not DS_USUARIO or not DS_SENHA:
+            if not DS_ORGANIZACAO or not DS_NOME or not DS_EMAIL or not DS_NUMERO_TEL or not DS_NOME or not DS_SENHA:
                 flash('Por favor, preencha o formulário!', 'info')
             # VERIFICANDO SE O EMAIL É VALIDO
             elif not re.match(r'[^@]+@[^@]+\.[^@]+', DS_EMAIL):
@@ -87,14 +96,14 @@ def register():
             elif not re.match(r'[0-9]{2}[0-9]{5}[0-9]{4}', DS_NUMERO_TEL):
                 flash('Telefone inválido!')
             # VERIFICA SE O NOME DO USUARIO É VALIDO
-            elif not re.match(r'[A-Za-z0-9]+', DS_USUARIO):
+            elif not re.match(r'[A-Za-z0-9]+', DS_NOME):
                 flash('O nome de usuário deve conter apenas caracteres e números!', 'danger')
             
             else:
                 cursor.callproc('sp_create_organizacao_and_user', (
-                    0, DS_ORGANIZACAO, data, 1,0,
+                    0, DS_ORGANIZACAO, data, 1,0, DS_CNPJ,
                     0, 'PW Grupo', data, 1, 0,
-                    0, DS_NOME, DS_NUMERO_TEL, DS_EMAIL, DS_USUARIO, senha_criptografada, 1, 0, 1,
+                    0, DS_NOME, DS_NUMERO_TEL, DS_EMAIL, DS_EMAIL, senha_criptografada, 1, 0, 1,
                     0, 0, 0, 0))
                 mysql.connection.commit()
                 flash('Organizacao criada com sucesso', 'success')
@@ -272,7 +281,7 @@ def list_user():
            # print(account['ID_USUARIO']) # DEBUG
             return render_template('usuario/usuarios.html', contas=account)
         except:
-            return render_template('error   .html')
+            return render_template('error.html')
     return redirect(url_for('login'))
 
 # CRIAR USUARIO
@@ -281,13 +290,13 @@ def criar_usuario():
     if 'loggedin' in session:
         try:
             msg = ''
-            if request.method == 'POST' and 'nome' in request.form and 'login' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form:
+            if request.method == 'POST' and 'nome' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form:
                 nome = request.form['nome']
-                login = request.form['login']
                 telefone = request.form['telefone']
                 email = request.form['email']
                 senha = request.form['senha']
                 confirmar_senha = request.form['confirmar_senha']
+
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_EMAIL = %s', (email,))
                 account = cursor.fetchone()
@@ -298,7 +307,9 @@ def criar_usuario():
                 elif senha != confirmar_senha:
                     flash('As senhas não conferem!', 'danger')
                 else:
-                    cursor.execute('INSERT INTO TB_USUARIO VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, nome, telefone, email, login, senha, 0, session['ID_ORGANIZACAO'], 0, ))
+                    # Criptografar a senha
+                    senha_criptografada = hashlib.sha256(senha.encode()).hexdigest()
+                    cursor.execute('INSERT INTO TB_USUARIO VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, nome, telefone, email, email, senha_criptografada, 0, session['ID_ORGANIZACAO'], 0))
                     mysql.connection.commit()
                     flash('Conta criada com sucesso!', 'success')
                     return redirect(url_for('list_user'))            
@@ -313,14 +324,16 @@ def editar_usuario(id_usuario):
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute('SELECT * FROM TB_USUARIO WHERE ID_USUARIO = %s', (id_usuario,))
             account = cursor.fetchone()
-            if request.method == 'POST' and 'nome' in request.form and 'login' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form and 'FL_ADMINISTRADOR' in request.form:
+            if request.method == 'POST' and 'nome' in request.form and 'telefone' in request.form and 'email' in request.form and 'senha' in request.form and 'confirmar_senha' in request.form:
                 nome = request.form['nome']
-                login = request.form['login']
+                #login = request.form['login']
                 telefone = request.form['telefone']
                 email = request.form['email']
                 senha = request.form['senha']
                 confirmar_senha = request.form['confirmar_senha']
-                FL_ADMINISTRADOR = request.form.getlist('FL_ADMINISTRADOR')
+                #FL_ADMINISTRADOR = request.form.getlist('FL_ADMINISTRADOR')
+                senha_criptografada = hashlib.sha256(senha.encode()).hexdigest()
+
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute('SELECT * FROM TB_USUARIO WHERE DS_EMAIL = %s', (email,))
                 account = cursor.fetchone()
@@ -329,7 +342,9 @@ def editar_usuario(id_usuario):
                 elif senha != confirmar_senha:
                     flash('As senhas não conferem!', 'danger')
                 else:
-                    cursor.execute('UPDATE TB_USUARIO SET NOME_USUARIO = %s, DS_TELEFONE = %s, DS_EMAIL = %s, DS_LOGIN = %s, DS_SENHA = %s, FL_ADMINISTRADOR = %s WHERE ID_USUARIO = %s', (nome, telefone, email, login, senha, id_usuario, FL_ADMINISTRADOR, ))
+                      # Criptografar a senha
+                    
+                    cursor.execute('UPDATE TB_USUARIO SET NOME_USUARIO = %s, DS_TELEFONE = %s, DS_EMAIL = %s, DS_LOGIN = %s, DS_SENHA = %s, FL_ADMINISTRADOR = %s, FL_PROPRIETARIO_CONTA = %s WHERE ID_USUARIO = %s', (nome, telefone, email, email, senha_criptografada, 0, 0, id_usuario))
                     mysql.connection.commit()
                     flash('Conta atualizada com sucesso!', 'success')
                     return redirect(url_for('list_user'))
