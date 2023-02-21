@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+
+{% block title %}Embeded PowerHUB]{% endblock %}
+
+{% block content %}
+
+		
+
+
+
+
+<div class="row">
+    <div class="col-xl-12 col-md-6 mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert text-center alert-{{ category }}"> {{ message }} </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="row align-items-center">
+            <div class="col">
+                <h2>Conta PowerBI</h2>
+            </div>
+            <div class="col d-flex flex-row-reverse bd-highlight">
+                {% if session['FL_ADMINISTRADOR'] == True %}
+                    {% if account is none %}
+                        <a href="#" type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal-1"> Cadastrar Contas</a>  
+                    {% else %}
+                        {{ super() }}
+                    {% endif %}
+                    {% else %}
+                        { super() }
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+	<!-- MODAL CRIAR CONTA-->
+    <div class="modal fade" id="myModal-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="p-3" >
+              <h4 class="modal-title">Conta Microsoft PowerBI</h4>
+            </div>
+            <form class="user"  method="post">
+            <div class="modal-body">
+                <div class="form-group align-items-center d-flex flex-column">
+                    <input type="text" name="login" class="form-control form-control-user"
+                        id="login" placeholder="login" required>
+                </div>
+
+                <div class="form-group align-items-center d-flex flex-column">
+                    <input type="text" name="password"  class="form-control form-control-user"
+                        id="password" placeholder="senha" required>
+                </div>
+
+            </div>
+            <div class="modal-footer d-flex justify-content-betwen flex-row ">
+              
+              <button class="btn btn-dark small btn-user btn-block"  type="submit">Cadastrar Conta</button>
+            </div>
+            </form>
+            
+          </div>
+        </div>
+      </div>  
+
+
+      {% if account is none or account|length == 0 %}
+        {{ super() }}
+      {% else %}
+      <div class="card">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+            
+              <th scope="col">Nome</th>
+              <th scope="col">Login</th>
+              <th scope="col">Ações</th>
+
+            </tr>
+          </thead>
+    
+        
+          <tbody>
+            
+              <tr>           
+                <td>{{ account['DS_LOGIN'] }}</td>
+                <td>{{ account['DS_SENHA'] }}</td>
+                <td>
+                  <div class="">
+                    <a href="" type="submit" id="id_grupo"><i class="fas fa-edit fa-2x text-gray-300"></i></a>
+                    
+                  </div>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+      {% endif %}
+
+<style>
+.usuario_adm, .usuario_view{
+    display: flex;
+  }
+ .usuario_adm span{
+  background-color: #abf7b9;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+.usuario_view span{
+  background-color: #fc799757;
+  width: 100%;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+code{
+    text-align: center;
+}
+</style>
+{% endblock %}

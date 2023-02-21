@@ -445,7 +445,7 @@ def Configuracoes():
     if 'loggedin' in session:
         if request.method == 'GET':
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('SELECT ORG.*, US.DS_EMAIL, US.DS_TELEFONE FROM TB_ORGANIZACAO ORG JOIN TB_USUARIO US ON US.ID_ORGANIZACAO = ORG.ID_ORGANIZACAO WHERE ORG.ID_ORGANIZACAO = %s AND US.FL_PROPRIETARIO_CONTA = 1', (session['ID_ORGANIZACAO'], ))
+            cursor.execute('SELECT ORG.*, US.DS_EMAIL, US.NOME_USUARIO, US.DS_TELEFONE FROM TB_ORGANIZACAO ORG JOIN TB_USUARIO US ON US.ID_ORGANIZACAO = ORG.ID_ORGANIZACAO WHERE ORG.ID_ORGANIZACAO = %s AND US.FL_PROPRIETARIO_CONTA = 1', (session['ID_ORGANIZACAO'], ))
             organizacao = cursor.fetchall()
             print(organizacao)
             cursor.close()
@@ -460,3 +460,29 @@ def pagamento():
         
         return render_template('premium/v_checkout.html')
 
+# embeded
+@app.route('/powerhub/embededpowerhub', methods=['GET', 'POST'])
+def embeded():
+    if 'loggedin' in session:
+        if request.method == 'POST' and 'login' in request.form and 'password' in request.form:
+            login = request.form['login']
+            password = request.form['password']
+            organizacao = session['ID_ORGANIZACAO']
+             # VERIFICA SE O USUARIO EXISTE NO BANCO
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_POWERBI WHERE ID_ORGANIZACAO = %s AND DS_LOGIN = %s', (organizacao, login )) # VERIFICA SE O USUARIO EXISTE NO BANCO
+            account = cursor.fetchone()
+            if account:
+                flash('Email já cadastrado para essa empresa!', 'danger')
+            else:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute('INSERT INTO TB_POWERBI VALUES(%s, %s, %s)', (organizacao, login, password )) # VERIFICA SE O USUARIO EXISTE NO BANCO
+                mysql.connection.commit()
+                cursor.close()
+                flash('Conta cadastrada com sucesso!', 'success')
+                return redirect(url_for('embeded'))
+        if request.method == 'GET':
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM TB_POWERBI WHERE ID_ORGANIZACAO = %s', (session['ID_ORGANIZACAO'], )) # VERIFICA SE O USUARIO EXISTE NO BANCO
+            account = cursor.fetchone()
+        return render_template('embeded/embeded.html', account = account)

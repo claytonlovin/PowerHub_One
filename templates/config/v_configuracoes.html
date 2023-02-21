@@ -29,12 +29,13 @@
               <input type="text" class="form-control form-control-user" id="nome"
               name="nome" value="{{ org['NOME_ORGANIZACAO'] }}" disabled>
           </div>
-		  
+          
 		  <div class="col-sm-6 mb-3 mb-sm-0">
-			<input type="date" class="form-control form-control-user" id="nome"
-			name="nome" value="{{ org['DATA_CRIACAO'] }}" disabled>
+			<input type="text" class="form-control form-control-user" id="nome"
+			name="nome" value="{{ org['DS_CNPJ'] }}" disabled>
 		</div>
 		</div>
+<!-- -->
 	<div class="form-group row">
 		<div class="col-sm-6 mb-3 mb-sm-0">
 			<input type="email" class="form-control form-control-user" id="nome"
@@ -44,9 +45,24 @@
 			<input type="text" class="form-control form-control-user" id="nome"
 			name="nome" value="{{ org['DS_TELEFONE'] }}" disabled>
 		</div>
-    {% endfor %}
-      </div>
+  </div>
 
+<!-- -->
+    <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+                <input type="text" class="form-control form-control-user" id="nome"
+                name="nome" value="{{ org['NOME_USUARIO'] }}" disabled>
+            </div>
+            
+        <div class="col-sm-6 mb-3 mb-sm-0">
+        <input type="text" class="form-control form-control-user" id="nome"
+        name="nome" value="{{ org['DATA_CRIACAO'] }}" disabled>
+        </div>
+        {% endfor %}
+      </div>
+  
+      
+      
   <button class="btn btn-dark small btn-user btn-block " type="submit" type="submit" disabled>Editar</button>
       
   </form>
