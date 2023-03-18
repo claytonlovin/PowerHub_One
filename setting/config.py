@@ -10,10 +10,11 @@ static_folder="../static")
 app.secret_key = 'chave secreta'
 
 # CONECTANDO AO BANCO
-app.config['MYSQL_HOST'] = '127.0.0.1'
+app.config['MYSQL_HOST'] = 'containers-us-west-160.railway.app'
+app.config['MYSQL_PORT'] = 7260
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'cs0209012'
-app.config['MYSQL_DB'] = 'DB_POWERHUB_HM'
+app.config['MYSQL_PASSWORD'] = 'xe2A1MBtBgrtAOoiTeTx'
+app.config['MYSQL_DB'] = 'railway'
 
 # INICIALIZANDO O MYSQL
 mysql = MySQL(app)
